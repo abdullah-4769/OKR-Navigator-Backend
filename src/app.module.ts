@@ -31,7 +31,7 @@ import { CertificationDataModule } from './campaign/certification/certification-
 import { FinalCertificationEvaluationModule } from './campaign/certification/final-certification-evaluation/final-certification-evaluation.module';
 import { PlansModule } from './plans/plans.module';
 import { AuthModule } from './auth/auth.module';
-
+import { ChallengesModule } from "./challengesModule/challenges/challenges.module"
 
 import { TeamSuggestionEvaluatorModule } from './team-evaluation/suggestion-evaluator-level-1/suggestion-evaluator.module';
 import { TeamEvaluateInitiativesModule } from './team-evaluation/evaluate-initiatives/evaluate-initiatives.module';
@@ -69,7 +69,8 @@ import { TeamFinalOkrEvaluationModule } from './team-evaluation/final-okr-evalua
     AuthModule,
     TeamSuggestionEvaluatorModule,
     TeamEvaluateInitiativesModule,
-    TeamFinalOkrEvaluationModule
+    TeamFinalOkrEvaluationModule,
+    ChallengesModule
   ],
   controllers: [AppController],
   providers: [PrismaService],

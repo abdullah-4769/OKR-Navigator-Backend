@@ -3,9 +3,27 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../lib/prisma/prisma.service'
 import { CreateFinalTeamScoreDto } from './dto/create-final-team-score.dto'
 
+export interface TeamLevel {
+  teamId: number
+  teamName: string
+  averageScore: number
+  averageRemainingTime: number
+  totalPoints: number
+  trophyCount: number
+  budgetCount: number
+  playerAchievements: string[]
+  level: number,
+  successRate: number
+}
 @Injectable()
 export class FinalTeamScoreService {
   constructor(private prisma: PrismaService) {}
+  private mapPoints(value: number) {
+    if (value >= 0 && value <= 10) return 0
+    if (value > 10 && value <= 20) return 1
+    return 2
+  }
+
 
   async create(dto: CreateFinalTeamScoreDto) {
     const { badge, trophy } = this.assignRewards(dto.score)
@@ -66,4 +84,207 @@ export class FinalTeamScoreService {
       this.assignPoints(dto.challengeAdoption, 10)
     )
   }
+
+async getTeamSummary(teamId: number) {
+
+  const members = await this.prisma.teamMember.findMany({
+    where: { teamId }
+  })
+
+
+  const scores = await this.prisma.finalTeamScore.findMany({
+    where: { teamId }
+  })
+
+
+  const userIds = members.map(m => m.userId)
+  const users = await this.prisma.user.findMany({
+    where: { id: { in: userIds } }
+  })
+
+
+  const mapPoints = (value: number) => {
+    if (value >= 0 && value <= 10) return 0
+    if (value > 10 && value <= 20) return 1
+    return 2
+  }
+
+
+  const userAverage = members.map(member => {
+    const userScore = scores.find(s => s.userId === member.userId)
+    const user = users.find(u => u.id === member.userId)
+
+    if (userScore) {
+      return {
+          userid: user?.id || 'Unknown',
+        name: user?.name || 'Unknown',
+        avatar: user?.avatarPicId || null,
+        role: member.role,
+        score: userScore.score
+      }
+    } else {
+      return {
+         userid: user?.id || 'Unknown',
+        name: user?.name || 'Unknown',
+        avatar: user?.avatarPicId || null,
+        role: member.role,
+        score: 'pending'
+      }
+    }
+  })
+
+
+  const submittedScores = scores.length
+    ? {
+        score: scores.reduce((sum, s) => sum + s.score, 0) / scores.length,
+        title: scores.find(s => s)?.title || null,
+        time: scores.find(s => s)?.time || null,
+        badge: scores.find(s => s)?.badge || null,
+        trophy: scores.find(s => s)?.trophy || null,
+        avgPercentage:
+          scores.reduce((sum, s) => sum + (s.avgPercentage || 0), 0) /
+          scores.length,
+        alignmentPoints:
+          scores.reduce((sum, s) => sum + mapPoints(s.alignmentStrategy), 0) /
+          scores.length,
+        objectivePoints:
+          scores.reduce((sum, s) => sum + mapPoints(s.objectiveClarity), 0) /
+          scores.length,
+        keyResultPoints:
+          scores.reduce((sum, s) => sum + mapPoints(s.keyResultQuality), 0) /
+          scores.length,
+        initiativePoints:
+          scores.reduce((sum, s) => sum + mapPoints(s.initiativeRelevance), 0) /
+          scores.length,
+        challengePoints:
+          scores.reduce((sum, s) => sum + mapPoints(s.challengeAdoption), 0) /
+          scores.length,
+        totalPoints:
+          scores.reduce(
+            (sum, s) =>
+              sum +
+              mapPoints(s.alignmentStrategy) +
+              mapPoints(s.objectiveClarity) +
+              mapPoints(s.keyResultQuality) +
+              mapPoints(s.initiativeRelevance) +
+              mapPoints(s.challengeAdoption),
+            0
+          ) / scores.length
+      }
+    : null
+
+  return {
+    teamId,
+    teamAverage: submittedScores,
+    userAverage
+  }
+}
+
+async getUserScore(teamId: number, userId: string) {
+  const member = await this.prisma.teamMember.findFirst({
+    where: { teamId, userId }
+  })
+  if (!member) return { message: 'User not part of this team' }
+
+  const user = await this.prisma.user.findUnique({ where: { id: userId } })
+  const score = await this.prisma.finalTeamScore.findFirst({
+    where: { teamId, userId }
+  })
+
+  const mapPoints = (value: number) => (value <= 10 ? 0 : value <= 20 ? 1 : 2)
+
+  if (!score) {
+    return {
+      name: user?.name || 'Unknown',
+      avatar: user?.avatarPicId || null,
+      role: member.role,
+      score: 'pending'
+    }
+  }
+
+  return {
+    name: user?.name || 'Unknown',
+    avatar: user?.avatarPicId || null,
+    role: member.role,
+    score: score.score,
+    title: score.title,
+    time: score.time,
+    badge: score.badge,
+    trophy: score.trophy,
+    avgPercentage: score.avgPercentage,
+    alignmentPoints: mapPoints(score.alignmentStrategy),
+    objectivePoints: mapPoints(score.objectiveClarity),
+    keyResultPoints: mapPoints(score.keyResultQuality),
+    initiativePoints: mapPoints(score.initiativeRelevance),
+    challengePoints: mapPoints(score.challengeAdoption),
+    totalPoints:
+      mapPoints(score.alignmentStrategy) +
+      mapPoints(score.objectiveClarity) +
+      mapPoints(score.keyResultQuality) +
+      mapPoints(score.initiativeRelevance) +
+      mapPoints(score.challengeAdoption)
+  }
+}
+
+async getTeamLevel(teamId: number): Promise<TeamLevel | null> {
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+    })
+
+    if (!team) return null
+
+    const scores = await this.prisma.finalTeamScore.findMany({
+      where: { teamId },
+    })
+
+    if (!scores.length) return null
+
+    const averageScore = scores.reduce((sum, s) => sum + s.score, 0) / scores.length
+    const averageRemainingTime =
+      scores.reduce((sum, s) => sum + Number(s.time || 0), 0) / scores.length
+
+    const totalPoints = scores.reduce(
+      (sum, s) =>
+        sum +
+        this.mapPoints(s.alignmentStrategy) +
+        this.mapPoints(s.objectiveClarity) +
+        this.mapPoints(s.keyResultQuality) +
+        this.mapPoints(s.initiativeRelevance) +
+        this.mapPoints(s.challengeAdoption),
+      0,
+    )
+
+    const trophyCount = scores.filter((s) => s.trophy).length
+    const budgetCount = scores.filter((s) => s.badge).length
+    const playerAchievements = scores.map((s) => s.title).filter((t): t is string => !!t)
+
+    const maxRawScorePerPlayer = 100
+    const maxTeamScore = maxRawScorePerPlayer * scores.length
+    const successRate = (scores.reduce((sum, s) => sum + s.score, 0) / maxTeamScore) * 100
+
+    const allTeams = await this.prisma.finalTeamScore.groupBy({
+      by: ['teamId'],
+      _avg: { score: true },
+    })
+
+    allTeams.sort((a, b) => (b._avg?.score || 0) - (a._avg?.score || 0))
+    const level = allTeams.findIndex((t) => t.teamId === teamId) + 1
+
+    return {
+      teamId,
+      teamName: team.title || '',
+      averageScore,
+      averageRemainingTime,
+      totalPoints,
+      trophyCount,
+      budgetCount,
+      playerAchievements,
+      level,
+      successRate,
+    }
+  }
+
+
+
+  
 }

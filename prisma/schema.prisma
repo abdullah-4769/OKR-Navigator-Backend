@@ -18,6 +18,10 @@ model User {
   avatarPicId String? 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  challengesHosted Challenge[] @relation("HostChallenges")
+  challengesJoined Challenge[] @relation("PlayerChallenges")
+  challengeInvitations ChallengeInvitation[]
+  
 }
 
 model Role {
@@ -234,4 +238,44 @@ model Subscription {
   startDate DateTime @default(now())
   expiryDate DateTime
   active    Boolean  @default(true)
+}
+
+
+
+model Challenge {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
+  hostId    String
+  playerId  String?
+  status    ChallengeStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  invitations ChallengeInvitation[]
+  host      User     @relation("HostChallenges", fields: [hostId], references: [id])
+  player    User?    @relation("PlayerChallenges", fields: [playerId], references: [id])
+}
+
+model ChallengeInvitation {
+  id          Int    @id @default(autoincrement())
+  challengeId Int
+  playerId    String
+  status      InvitationStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+
+  challenge Challenge @relation(fields: [challengeId], references: [id])
+  player    User      @relation(fields: [playerId], references: [id])
+}
+
+enum ChallengeStatus {
+  PENDING
+  READY
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }

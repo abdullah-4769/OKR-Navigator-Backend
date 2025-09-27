@@ -67,7 +67,6 @@ export class CampaignAwardService {
     return this.assignRewards(scores.map(s => ({ userId: s.userId!, totalScore: s.totalScore })))
   }
 
-  // get latest result with reward for a user
   async getLatestResultByUser(userId: string) {
     const latest = await this.prisma.campaignModeScore.findFirst({
       where: { userId },
@@ -99,7 +98,7 @@ export class CampaignAwardService {
     return { ...latest, ...reward }
   }
 
-  // get user summary for certifications (level === 3)
+
   async getUserSummary(userId: string) {
     const scores = await this.prisma.campaignModeScore.findMany({
       where: { userId },
@@ -130,45 +129,55 @@ async getUserCertifications(userId: string) {
       id: true,
       userId: true,
       totalScore: true,
-      level: true,
       strengths: true,
+      createdAt: true, // include date
     },
   })
 
-  const certScores = scores.filter(s => s.level === 3)
-  const totalEarned = certScores.length
-  const totalPossible = 12
-  const inProgress = totalPossible - totalEarned
+  const totalEarned = scores.length
 
   const rewards = this.assignRewards(
-    certScores.map(s => ({ userId: s.userId!, totalScore: s.totalScore }))
+    scores.map(s => ({ userId: s.userId!, totalScore: s.totalScore ?? 0 }))
   )
 
   const certifications = rewards
     .filter(r => r.badge !== '')
-    .sort((a, b) => {
-      const priority = { 'Platinum Star': 0, 'Gold Star': 1, 'Silver Star': 2, 'Bronze Star': 3 }
-      return (priority[a.badge] || 4) - (priority[b.badge] || 4)
+    .map((r, index) => {
+      const score = scores[index].totalScore ?? 0
+      let title = ''
+      let badge = ''
+
+      if (score >= 90) {
+        badge = 'Gold Badge'
+        title = 'Navigator Expert Certificate'
+      } else if (score >= 80) {
+        badge = 'Silver Badge'
+        title = 'Confirmed Navigator Certificate'
+      } else if (score >= 70) {
+        badge = 'Bronze Badge'
+        title = 'Attestation of Participation'
+      } else {
+        badge = 'Feedback'
+        title = 'Recommendation to replay the challenge'
+      }
+
+      return {
+        id: scores[index].id,
+        memberId: r.memberId,
+        title,
+        badge,
+        strengths: scores[index].strengths,
+        totalScore: score,
+        date: scores[index].createdAt, // add date here
+      }
     })
-    .map((r, index) => ({
-      id: certScores[index].id,
-      memberId: r.memberId,
-      title:
-        r.badge === 'Platinum Star' || r.badge === 'Gold Star'
-          ? 'Navigator Expert Certificate'
-          : r.badge === 'Silver Star'
-          ? 'Confirmed Navigator Certificate'
-          : 'Attestation of Participation',
-      badge: r.badge,
-      strengths: certScores[index].strengths,
-      totalScore: certScores[index].totalScore,
-    }))
 
   return {
-    progress: { earned: totalEarned, total: totalPossible, inProgress },
+    progress: { earned: totalEarned, total: totalEarned },
     certifications,
   }
 }
+
 
 
 async getCertificationById(userId: string, certId: number) {
