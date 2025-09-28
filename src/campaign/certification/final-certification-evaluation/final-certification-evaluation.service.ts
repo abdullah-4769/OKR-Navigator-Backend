@@ -17,7 +17,7 @@ export class FinalCertificationEvaluationService {
       dto.userInitiative2KR1,
       dto.userInitiative1KR2,
       dto.userInitiative2KR2,
-      dto.language || 'en', // default to English
+      dto.language || 'en',
     );
 
     const response = await llm.invoke([{ role: 'user', content: prompt }]);
