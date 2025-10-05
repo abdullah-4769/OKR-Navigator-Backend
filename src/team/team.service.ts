@@ -188,8 +188,53 @@ async getTeamDetails(teamId: number) {
   }
 }
 
+async getUsersInTeam(teamId: number, userId: string) {
+  const members = await this.prisma.teamMember.findMany({
+    where: { teamId, NOT: { userId } },
+    select: {
+      id: true,
+      teamId: true,
+      userId: true,
+      role: true,
+      joinedAt: true,
+    },
+  })
+
+  if (!members.length) throw new NotFoundException('No other members found in this team')
+
+  const users = await this.prisma.user.findMany({
+    where: { id: { in: members.map(m => m.userId) } },
+    select: { id: true, name: true, avatarPicId: true },
+  })
+
+  return members.map(m => ({
+    ...m,
+    user: users.find(u => u.id === m.userId) || null,
+  }))
+}
 
 
+ async getUserInTeamDetails(teamId: number, userId: string) {
+    const member = await this.prisma.teamMember.findFirst({
+      where: { teamId, userId },
+      select: {
+        id: true,
+        teamId: true,
+        userId: true,
+        role: true,
+        joinedAt: true,
+      },
+    })
+
+    if (!member) throw new NotFoundException('User not found in this team')
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, name: true, avatarPicId: true },
+    })
+
+    return { ...member, user }
+  }
 
 
 

@@ -279,3 +279,28 @@ enum InvitationStatus {
   ACCEPTED
   REJECTED
 }
+
+
+
+model ChallengeModeScore {
+  id                  Int      @id @default(autoincrement())
+  userId              String
+  challengeId         Int
+
+  score               Int
+  title               String?
+
+  alignmentStrategy   Int
+  objectiveClarity    Int
+  keyResultQuality    Int
+  initiativeRelevance Int
+  challengeAdoption   Int
+  time                String?
+
+  strategyAlignment   Json     // { title: String, description: String }
+  objectiveAlignment  Json     // { title: String, description: String }
+  keyResultQualityLog Json     // { title: String, description: String }
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}

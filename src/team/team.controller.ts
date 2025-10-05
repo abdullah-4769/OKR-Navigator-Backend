@@ -62,4 +62,23 @@ async autoAddUsers(@Param('teamId', ParseIntPipe) teamId: number) {
     return this.teamService.getTeamDetails(teamId)
   }
 
+
+  @Get(':teamId/members/:userId')
+async getUsersInTeam(
+  @Param('teamId', ParseIntPipe) teamId: number,
+  @Param('userId') userId: string
+) {
+  return this.teamService.getUsersInTeam(teamId, userId)
+}
+
+
+
+ @Get(':teamId/user/:userId')
+  async getUserInTeam(
+    @Param('teamId', ParseIntPipe) teamId: number,
+    @Param('userId') userId: string,
+  ) {
+    return this.teamService.getUserInTeamDetails(teamId, userId)
+  }
+
 }

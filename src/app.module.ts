@@ -32,6 +32,7 @@ import { FinalCertificationEvaluationModule } from './campaign/certification/fin
 import { PlansModule } from './plans/plans.module';
 import { AuthModule } from './auth/auth.module';
 import { ChallengesModule } from "./challengesModule/challenges/challenges.module"
+import { ChallengeModeScoreModule } from './challengesModule/challenge-mode-score/challenge-mode-score.module'
 
 import { TeamSuggestionEvaluatorModule } from './team-evaluation/suggestion-evaluator-level-1/suggestion-evaluator.module';
 import { TeamEvaluateInitiativesModule } from './team-evaluation/evaluate-initiatives/evaluate-initiatives.module';
@@ -70,7 +71,8 @@ import { TeamFinalOkrEvaluationModule } from './team-evaluation/final-okr-evalua
     TeamSuggestionEvaluatorModule,
     TeamEvaluateInitiativesModule,
     TeamFinalOkrEvaluationModule,
-    ChallengesModule
+    ChallengesModule,
+    ChallengeModeScoreModule
   ],
   controllers: [AppController],
   providers: [PrismaService],
