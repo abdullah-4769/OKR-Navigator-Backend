@@ -34,4 +34,11 @@ export class FinalTeamScoreController {
     return this.finalTeamScoreService.getTeamLevel(Number(id));
   }
 
+
+    @Get('player-ranking/:userId')
+  async getPlayerRanking(@Param('userId') userId: string) {
+    return this.finalTeamScoreService.getPlayerRanking(userId)
+  }
+
+
 }

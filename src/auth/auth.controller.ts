@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body,Param, Get, UseGuards, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -40,6 +40,9 @@ async setAvatar(
   return this.authService.setAvatar(userId, avatarPicId)
 }
 
-
+  @Get('users-except/:id')
+  async getUsersExcept(@Param('id') id: string) {
+    return this.authService.getUsersExcept(id);
+  }
 
 }

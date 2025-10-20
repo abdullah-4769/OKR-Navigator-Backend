@@ -45,4 +45,12 @@ export class ChallengesController {
   ) {
     return this.service.respondToInvitation(Number(invitationId), body.playerId, body.accept)
   }
+
+
+
+  
+    @Get(":id/challengeplayer")
+  getChallengeUsers(@Param("id") id: string) {
+    return this.service.getChallengeUsers(Number(id))
+  }
 }

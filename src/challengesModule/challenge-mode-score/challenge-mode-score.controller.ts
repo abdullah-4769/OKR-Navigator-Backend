@@ -1,5 +1,5 @@
 // src/challenge-mode-score/challenge-mode-score.controller.ts
-import { Controller, Post, Body, Get, Query } from '@nestjs/common'
+import { Controller, Post, Body, Get, Param,Query } from '@nestjs/common'
 import { ChallengeModeScoreService } from './challenge-mode-score.service'
 import { CreateChallengeScoreDto } from './dto/create-challenge-score.dto'
 
@@ -16,4 +16,11 @@ export class ChallengeModeScoreController {
   async getScore(@Query('challengeId') challengeId: number, @Query('userId') userId: string) {
     return this.service.getScore(+challengeId, userId)
   }
+
+
+  @Get('ranking/:userId')
+  async getUserRanking(@Param('userId') userId: string) {
+    return this.service.getUserChallengeRanking(userId)
+  }
+
 }

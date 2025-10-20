@@ -11,4 +11,12 @@ export class SuggestionEvaluatorController {
   async evaluate(@Body() body: EvaluateSuggestionDto): Promise<SuggestionResultDto> {
     return this.evaluatorService.evaluateWithLLM(body);
   }
+
+
+
+  @Post('organization/generate')
+async generate(@Body() body: { role: string; language: string }) {
+  return this.evaluatorService.generateOrganization(body.role, body.language);
+}
+
 }

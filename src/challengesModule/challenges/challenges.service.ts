@@ -101,12 +101,51 @@ export class ChallengesService {
     return Promise.all(invites)
   }
 
-  async getPlayerInvitations(playerId: string) {
-    return this.prisma.challengeInvitation.findMany({
-      where: { playerId },
-      include: { challenge: true },
-    })
-  }
+async getPlayerInvitations(playerId: string) {
+  const invitations = await this.prisma.challengeInvitation.findMany({
+    where: { playerId },
+    include: { challenge: true },
+  })
+
+  const hostIds = invitations.map(inv => inv.challenge.hostId)
+  const uniqueHostIds = Array.from(new Set(hostIds))
+
+  const hosts = await this.prisma.user.findMany({
+    where: { id: { in: uniqueHostIds } },
+    select: { id: true, name: true, email: true, avatarPicId: true },
+  })
+
+  const allScores = await this.prisma.challengeModeScore.groupBy({
+    by: ["userId"],
+    _sum: { score: true },
+  })
+
+  const sortedScores = allScores
+    .map(s => ({ userId: s.userId, totalScore: s._sum.score || 0 }))
+    .sort((a, b) => b.totalScore - a.totalScore)
+
+  const rankMap = new Map(sortedScores.map((s, i) => [s.userId, i + 1]))
+
+  return invitations.map(inv => {
+    const host = hosts.find(h => h.id === inv.challenge.hostId)
+    const hostScore = sortedScores.find(s => s.userId === inv.challenge.hostId)?.totalScore || 0
+    const hostRank = rankMap.get(inv.challenge.hostId) || null
+
+    return {
+      ...inv,
+      challenge: {
+        ...inv.challenge,
+        hostDetail: {
+          ...host,
+          totalPoints: hostScore,
+          rank: hostRank,
+        },
+      },
+    }
+  })
+}
+
+
 
   async respondToInvitation(invitationId: number, playerId: string, accept: boolean) {
     const invitation = await this.prisma.challengeInvitation.findUnique({ where: { id: invitationId } })
@@ -121,4 +160,38 @@ export class ChallengesService {
 
     return this.prisma.challengeInvitation.update({ where: { id: invitationId }, data: { status } })
   }
+
+  async getChallengeUsers(challengeId: number) {
+    const challenge = await this.prisma.challenge.findUnique({
+      where: { id: challengeId },
+      select: { hostId: true, playerId: true },
+    })
+    if (!challenge) throw new NotFoundException()
+
+    const userIds = [challenge.hostId]
+    if (challenge.playerId) userIds.push(challenge.playerId)
+
+    const users = await this.prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true, name: true, avatarPicId: true },
+    })
+
+    const allScores = await this.prisma.challengeModeScore.groupBy({
+      by: ["userId"],
+      _sum: { score: true },
+    })
+
+    const sortedScores = allScores
+      .map(s => ({ userId: s.userId, totalScore: s._sum.score || 0 }))
+      .sort((a, b) => b.totalScore - a.totalScore)
+
+    const rankMap = new Map(sortedScores.map((s, i) => [s.userId, i + 1]))
+
+    return users.map(u => ({
+      name: u.name,
+      avatarPicId: u.avatarPicId,
+      rank: rankMap.get(u.id) || null,
+    }))
+  }
+
 }

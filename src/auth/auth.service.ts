@@ -107,4 +107,22 @@ export class AuthService {
 
     return user;
   }
+
+
+
+async getUsersExcept(userId: string) {
+  const users = await this.prisma.user.findMany({
+    where: {
+      NOT: { id: userId }
+    },
+    select: {
+      name: true,
+      avatarPicId: true,
+    },
+  });
+
+  return users;
+}
+
+
 }

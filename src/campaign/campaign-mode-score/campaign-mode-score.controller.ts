@@ -25,4 +25,11 @@ export class CampaignModeScoreController {
   findLatest(@Param('userId') userId: string) {
     return this.service.findLatestByUser(userId); 
   }
+
+
+  @Get('ranking/:userId')
+  async getRanking(@Param('userId') userId: string) {
+    return this.service.getUserCampaignRanking(userId)
+  }
+
 }
