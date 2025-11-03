@@ -116,6 +116,7 @@ async getUsersExcept(userId: string) {
       NOT: { id: userId }
     },
     select: {
+      id:true,
       name: true,
       avatarPicId: true,
     },
