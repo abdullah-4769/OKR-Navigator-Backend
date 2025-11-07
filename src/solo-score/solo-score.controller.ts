@@ -49,4 +49,6 @@ export class SoloScoreController {
   getUserRanking(@Param('userId') userId: string) {
     return this.soloScoreService.getUserRanking(userId);
   }
+
+  
 }

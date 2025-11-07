@@ -304,3 +304,14 @@ model ChallengeModeScore {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }
+
+
+
+model PointAdjustment {
+  id           String   @id @default(uuid())
+  level        Int
+  xpRangeStart Int
+  title        String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
