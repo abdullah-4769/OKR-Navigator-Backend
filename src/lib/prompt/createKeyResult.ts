@@ -4,21 +4,32 @@ export const krPrompt = (
   role: string,
   language: string,
 ) => `
-Generate exactly 3 Key Results for this Objective.
+Generate exactly 3 Key Results for the Objective below.
 
 Rules:
-1. Each KR must have:
-   - "id": a number (1 to 12, sequential across all objectives)
-   - "title": max 6 words, short and clear
-   - "description": 1–2 sentences explaining the KR
-2. Each KR must be measurable with %, $, or numbers
-3. Each KR must directly support Objective: "${objective}"
-4. Align with Strategy: "${strategy}"
-5. Consider the Role: "${role}"
-6. Write the response in **${language}**
+1. Each Key Result must include:
+   - "id": a number from 1 to 12, in order
+   - "title": maximum 6 words, clear, action-focused, and unique each time
+   - "description": 1–2 natural sentences with measurable values, written fresh each time
 
-Return ONLY valid JSON:
+2. All measurable values must be fully dynamic:
+   - Use numbers, percentages, or dates that are unique in each Key Result
+   - Do not repeat any number, percentage, or date inside the 3 Key Results
+   - Do not use common or predictable values
+   - Generate varied, natural metrics without patterns or repetition
 
+3. All Key Results must directly support:
+   "${objective}"
+
+4. Align every Key Result with:
+   "${strategy}"
+
+5. Consider this role while writing:
+   "${role}"
+
+6. Write the response fully in **${language}**.
+
+Return ONLY valid JSON in this structure, but generate new titles and descriptions:
 {
   "strategy": "${strategy}",
   "objective": "${objective}",
@@ -27,19 +38,19 @@ Return ONLY valid JSON:
   "keyResults": [
     {
       "id": 1,
-      "title": "Cut response time",
-      "description": "Reduce average response time by 30% compared to 2024"
+      "title": "DYNAMIC TITLE",
+      "description": "DYNAMIC measurable description with unique values"
     },
     {
       "id": 2,
-      "title": "Resolve on first reply",
-      "description": "Achieve 90% of tickets resolved on first response"
+      "title": "DYNAMIC TITLE",
+      "description": "DYNAMIC measurable description with unique values"
     },
     {
       "id": 3,
-      "title": "Boost team efficiency",
-      "description": "Increase customer support team efficiency by 20%"
+      "title": "DYNAMIC TITLE",
+      "description": "DYNAMIC measurable description with unique values"
     }
   ]
 }
-`
+`;

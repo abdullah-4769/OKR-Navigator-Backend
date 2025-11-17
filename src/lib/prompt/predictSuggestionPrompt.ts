@@ -42,22 +42,22 @@ Analyze the input below for **Strategic Alignment**, **Objective Alignment**, an
   "normalizedScore": "0/30",
   "points": "0/3",
   "title": "[Perfect, Good, Needs Work based on overallScore]",
-  "feedback": "Overall suggestion text",
+  "feedback": "Overall suggestion text in 10-15 words",
   "breakdown": {
     "strategyAlignment": {
       "title": "[Perfect, Good, Needs Work]",
       "score": 0,
-      "suggestion": "[Text suggestion]"
+      "suggestion": "[Text suggestion and text in 10-15 words]"
     },
     "objectiveAlignment": {
       "title": "[Perfect, Good, Needs Work]",
       "score": 0,
-      "suggestion": "[Text suggestion]"
+      "suggestion": "[Text suggestion ]"
     },
     "keyResultQuality": {
       "title": "[Perfect, Good, Needs Work]",
       "score": 0,
-      "suggestion": "[Text suggestion including if more key results are recommended]"
+      "suggestion": "[Text suggestion including if more key results are recommended and text in 10-15 words]"
     }
   }
 }

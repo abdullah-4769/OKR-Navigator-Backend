@@ -37,6 +37,9 @@ import { PointAdjustmentModule } from './admin/point-adjustment/point-adjustment
 import { TeamSuggestionEvaluatorModule } from './team-evaluation/suggestion-evaluator-level-1/suggestion-evaluator.module';
 import { TeamEvaluateInitiativesModule } from './team-evaluation/evaluate-initiatives/evaluate-initiatives.module';
 import { TeamFinalOkrEvaluationModule } from './team-evaluation/final-okr-evaluation/final-okr-evaluation.module'; 
+import { GoogleModule } from './google/google.module';
+import { BonusScoreModule } from './bonus/bonus-score.module';
+
 
 @Module({
   imports: [
@@ -73,7 +76,9 @@ import { TeamFinalOkrEvaluationModule } from './team-evaluation/final-okr-evalua
     TeamEvaluateInitiativesModule,
     TeamFinalOkrEvaluationModule,
     ChallengesModule,
-    ChallengeModeScoreModule
+    ChallengeModeScoreModule,
+    GoogleModule,
+    BonusScoreModule,
   ],
   controllers: [AppController],
   providers: [PrismaService],
