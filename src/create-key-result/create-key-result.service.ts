@@ -43,24 +43,23 @@ export class CreateKeyResultService {
   }
 
   // Generate KRs for all objectives in batch
-  public async generateKRsForObjectives(
-    strategy: string,
-    objectives: string[],
-    role: string,
-    language: string, // new field
-  ): Promise<KeyResultBatch[]> {
-    const results: KeyResultBatch[] = []
-    let idCounter = 1
+public async generateKRsForObjectives(
+  strategy: string,
+  objectives: string[],
+  role: string,
+  language: string
+): Promise<KeyResultBatch[]> {
+  let idCounter = 1
 
-    for (const objective of objectives) {
+  const results = await Promise.all(
+    objectives.map(async (objective) => {
       const keyResults = await this.generateKRsForObjective(
         strategy,
         objective,
         role,
-        language,
+        language
       )
 
-      // assign sequential IDs if missing
       keyResults.forEach((kr) => {
         if (!kr.id) {
           kr.id = idCounter++
@@ -69,14 +68,18 @@ export class CreateKeyResultService {
         }
       })
 
-      results.push({
+      return {
         strategy,
         objective,
         role,
         keyResults,
-      })
-    }
+      }
+    })
+  )
 
-    return results
-  }
+  return results
+}
+
+
+
 }

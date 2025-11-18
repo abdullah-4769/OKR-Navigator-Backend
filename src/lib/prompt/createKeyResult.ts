@@ -10,7 +10,7 @@ Generate exactly 2 Key Results for the Objective below.
 Rules:
 1. Each Key Result must include:
    - "id": a number from 1 to 12, in order
-   - "title": maximum 6 words, clear, action-focused, and unique each time
+   - "title": null
    - "description": 1–2 natural sentences with measurable values, written fresh each time
 
 2. All measurable values must be fully dynamic:
@@ -39,17 +39,17 @@ Return ONLY valid JSON in this structure, but generate new titles and descriptio
   "keyResults": [
     {
       "id": 1,
-      "title": "DYNAMIC TITLE",
+      "title": "null",
       "description": "DYNAMIC measurable description with unique values"
     },
     {
       "id": 2,
-      "title": "DYNAMIC TITLE",
+      "title": "null",
       "description": "DYNAMIC measurable description with unique values"
     },
     {
       "id": 3,
-      "title": "DYNAMIC TITLE",
+      "title": null",
       "description": "DYNAMIC measurable description with unique values"
     }
   ]
