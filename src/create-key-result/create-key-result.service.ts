@@ -26,7 +26,7 @@ export class CreateKeyResultService {
   ): Promise<KeyResultItem[]> {
     // Build language-aware prompt
     const prompt = krPrompt(strategy, objective, role, language)
-    const messages = [{ role: 'user', content: prompt }]
+    const messages = [{ role: 'system', content: prompt }]
 
     // Call LLM
     const response = await llm.call(messages)

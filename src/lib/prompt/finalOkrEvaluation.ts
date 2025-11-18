@@ -6,7 +6,7 @@ export const finalOkrEvaluationPrompt = (
   proposal: string,
   language: string
 ) => `
-You are an expert OKR and initiative evaluation assistant. 
+ You are an expert OKR evaluation assistant.
 Always respond in the requested language: "${language}".
 
 **User Inputs:**

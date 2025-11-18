@@ -8,7 +8,7 @@ export const challengePrompt = (
   {
     role: 'system',
     content: `
-You are an AI OKR Coach. The player has attempted ${previousAttempts} time(s).
+ You are an expert OKR evaluation assistant. The player has attempted ${previousAttempts} time(s).
 Based on the Strategy: "${strategy}", Objective: "${objective}", and Key Result: "${keyResult}",
 
 Generate ONE challenge in STRICT JSON format.

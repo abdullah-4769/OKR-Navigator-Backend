@@ -1,6 +1,6 @@
 export function generateOrganizationPrompt(role: string, language: string) {
   return `
-You are an OKR learning game generator.
+ You are an expert OKR evaluation assistant.
 
 Create one fictional organization for a campaign mode level.
 The organization must feel realistic and include:

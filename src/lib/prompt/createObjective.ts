@@ -4,6 +4,7 @@ export const okrPrompt = (
   industry: string,
   language: string,
 ) => `
+You are an expert OKR evaluation assistant.
 Act as an OKR expert. Create **8 fully unique and high-impact Objectives** that align tightly with:
 - Strategy: ${strategy}
 - Role: ${role}

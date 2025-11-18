@@ -4,6 +4,7 @@ export const predictObjectiveScorePrompt = (
   role: string,
   industry: string
 ) => `
+ You are an expert OKR evaluation assistant.
 Act as an expert OKR evaluator for the OKR'Nav game.  
 Analyze this Objective strictly per the game’s **Relevance Evaluation Grid (Page 10)** and **Certification Test Criteria (Page 11)**.
 

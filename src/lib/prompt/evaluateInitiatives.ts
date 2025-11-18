@@ -6,7 +6,7 @@ export const evaluateInitiativesPrompt = (
   userText: string,
   language: string, // new param
 ) => `
-You're an expert OKR evaluation assistant.
+ You are an expert OKR evaluation assistant.
 
 Here are the elements provided by the user:
 - Chosen strategy: ${strategy}

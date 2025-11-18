@@ -18,57 +18,46 @@ async generateAndSaveObjectives(
   industry: string,
   language: string,
 ) {
-  let attempt = 0
+  const prompt = okrPrompt(strategy, role, industry, language)
+
   let objectivesData: Array<{ title: string; description?: string; difficulty?: number }> = []
 
-  while (attempt < 3 && objectivesData.length === 0) {
-    attempt++
-    const prompt = okrPrompt(strategy, role, industry, language)
+  try {
+    const response = await llm.call([{ role: 'system', content: prompt }])
+    let text = response.text.replace(/```json/g, '').replace(/```/g, '').trim()
+    const data = JSON.parse(text)
 
-    const response = await llm.call([{ role: 'user', content: prompt }])
-    let text = response.text
-
-    text = text.replace(/```json/g, '').replace(/```/g, '').trim()
-
-    try {
-      const data = JSON.parse(text)
-
-      if (Array.isArray(data.okrs)) {
-        objectivesData = data.okrs.map((o: any) => ({
-          title: o.title ?? '',
-          description: o.description ?? null,
-          difficulty: o.difficulty ?? 1,
-        }))
-      }
-    } catch (err) {
-      console.error('JSON parse error in LLM response:', err)
+    if (Array.isArray(data.okrs)) {
+      objectivesData = data.okrs.map((o: any) => ({
+        title: o.title ?? '',
+        description: o.description ?? null,
+        difficulty: o.difficulty ?? 1,
+      }))
     }
+  } catch (err) {
+    console.error('Error generating objectives:', err)
+    return { error: 'Failed to generate OKRs' }
   }
 
   if (objectivesData.length === 0) {
-    return { error: 'Failed to generate OKRs after 3 attempts' }
+    return { error: 'No objectives generated' }
   }
 
-  await this.prisma.objective.deleteMany({
-    where: { strategyId },
-  })
+  await this.prisma.$transaction([
+    this.prisma.objective.deleteMany({ where: { strategyId } }),
+    this.prisma.objective.createMany({
+      data: objectivesData.map((obj) => ({
+        strategyId,
+        title: obj.title,
+        description: obj.description,
+        difficulty: obj.difficulty,
+      })),
+    }),
+  ])
 
-  await this.prisma.objective.createMany({
-    data: objectivesData.map((obj) => ({
-      strategyId,
-      title: obj.title,
-      description: obj.description,
-      difficulty: obj.difficulty,
-    })),
-  })
-
-  const savedObjectives = await this.prisma.objective.findMany({
-    where: { strategyId },
-    orderBy: { id: 'asc' },
-  })
-
-  return { message: 'Objectives saved', objectives: savedObjectives }
+  return { message: 'Objectives saved', objectives: objectivesData }
 }
+
 
 
 

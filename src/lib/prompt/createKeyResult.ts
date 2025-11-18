@@ -4,6 +4,7 @@ export const krPrompt = (
   role: string,
   language: string,
 ) => `
+You are an expert OKR evaluation assistant.
 Generate exactly 2 Key Results for the Objective below.
 
 Rules:

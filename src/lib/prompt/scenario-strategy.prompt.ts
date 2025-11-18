@@ -1,7 +1,8 @@
 // lib/prompt/scenario-strategy.prompt.ts
 export function generateScenarioPrompt(sector: string, role: string, language: string = 'en'): string {
   return `
-You are a business strategy simulation engine. Your task is to generate a certification challenge for a serious game about OKRs.
+   You are an expert OKR evaluation assistant.
+You are a OKR strategy simulation engine. Your task is to generate a certification challenge for a serious game about OKRs.
 
 Player Context:
 - Sector: ${sector}
