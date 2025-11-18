@@ -9,7 +9,7 @@ Generate exactly 2 Key Results for the Objective below.
 
 Rules:
 1. Each Key Result must include:
-   - "id": a number from 1 to 12, in order
+   - "id": a number 
    - "title": null
    - "description": 1–2 natural sentences with measurable values, written fresh each time
 
@@ -47,11 +47,6 @@ Return ONLY valid JSON in this structure, but generate new titles and descriptio
       "title": "null",
       "description": "DYNAMIC measurable description with unique values"
     },
-    {
-      "id": 3,
-      "title": null",
-      "description": "DYNAMIC measurable description with unique values"
-    }
   ]
 }
 `;
