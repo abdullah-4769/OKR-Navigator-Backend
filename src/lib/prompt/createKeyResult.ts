@@ -15,7 +15,7 @@ Rules:
 
 2. All measurable values must be fully dynamic:
    - Use numbers, percentages, or dates that are unique in each Key Result
-   - Do not repeat any number, percentage, or date inside the 3 Key Results
+   - Do not repeat any number, percentage, or date inside the 2 Key Results
    - Do not use common or predictable values
    - Generate varied, natural metrics without patterns or repetition
 
