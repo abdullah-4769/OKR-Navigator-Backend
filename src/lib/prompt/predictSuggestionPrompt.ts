@@ -6,34 +6,55 @@ export const predictSuggestionPrompt = (
   keyResults: string,
   language: string
 ) => `
-Act as an OKR advisor for the OKR'Nav game. 
-Analyze the input below for **Strategic Alignment**, **Objective Alignment**, and **Key Result Quality**.
+Act as an OKR advisor for the OKR'Nav game.
+Evaluate the input with high precision. Focus on clarity, alignment, and measurable structure.
 
-**Strategy**: ${strategy}  
-**Role**: ${role}  
-**Industry**: ${industry}  
-**Objective**: "${objective}"  
-**Key Results**: "${keyResults}"  
+**Strategy**: ${strategy}
+**Role**: ${role}
+**Industry**: ${industry}
+**Objective**: "${objective}"
+**Key Results**: "${keyResults}"
 **Language**: ${language}
 
-### Suggestion Guidelines
-- First, give an **overall score out of 100** for the input
-- Also provide a **normalized score out of 30** based on weighting
-  - Strategy (30%), Objective (30%), Key Results (40%)
-  - Example: if overallScore = 75, normalizedScore = 22.5/30
-- Provide a **top-level title** based on overallScore: 
-  - 90–100 → "Perfect"
-  - 70–89 → "Good"
-  - Below 70 → "Needs Work"
-- Provide a **title for each part**: Perfect, Good, or Needs Work
-- Provide a **score for each part**: strategy out of 30, objective out of 30, key results out of 40
-- Split **key results by comma** and evaluate each individually
-- **Start evaluation of each key result clearly** with "Key Result [number]:"
-- Give **1 point per key result** if it is specific, measurable, and time-bound
-- Sum points to **3/3**, even if fewer key results are listed, but mention in suggestion that more key results can improve coverage
-- Provide a **suggestion text** explaining strengths or improvements
-- Always give the best response with high accuracy and relevance
-- Write the response in **${language}**
+### Evaluation Rules
+
+#### 1. Overall Scoring
+- Give an **overall score out of 100**.
+- Then convert it to a **normalized score out of 30**:
+  - Strategy = 30%
+  - Objective = 30%
+  - Key Results = 40%
+- Write normalized score as: "X/30"
+
+#### 2. Main Title
+Choose one title based on overallScore:
+- 90–100 → "Perfect"
+- 70–89 → "Good"
+- Below 70 → "Needs Work"
+
+#### 3. Section Breakdown
+Each section must include:
+- Title: Perfect, Good, or Needs Work
+- Score:
+  - Strategy: 0–30
+  - Objective: 0–30
+  - Key Results: 0–40
+- A clear suggestion (short, specific, 10–15 words)
+
+#### 4. Key Result Evaluation
+- Split key results by comma.
+- For each KR, start with: **"Key Result [number]:"**
+- Give **1 point per KR** if it is:
+  - Specific
+  - Measurable
+  - Time-bound
+- Total points must be shown as **"X/3"**.
+- If fewer than 3 KRs exist, mention that more KRs can improve clarity.
+
+#### 5. Feedback Quality
+- Final feedback must be concise (10–15 words).
+- Provide constructive guidance, not generic comments.
+- Response must be written in **${language}**.
 
 ### Output Format
 \`\`\`json
@@ -41,23 +62,23 @@ Analyze the input below for **Strategic Alignment**, **Objective Alignment**, an
   "overallScore": 0,
   "normalizedScore": "0/30",
   "points": "0/3",
-  "title": "[Perfect, Good, Needs Work based on overallScore]",
-  "feedback": "Overall suggestion text in 10-15 words",
+  "title": "",
+  "feedback": "",
   "breakdown": {
     "strategyAlignment": {
-      "title": "[Perfect, Good, Needs Work]",
+      "title": "",
       "score": 0,
-      "suggestion": "[Text suggestion and text in 10-15 words]"
+      "suggestion": ""
     },
     "objectiveAlignment": {
-      "title": "[Perfect, Good, Needs Work]",
+      "title": "",
       "score": 0,
-      "suggestion": "[Text suggestion ]"
+      "suggestion": ""
     },
     "keyResultQuality": {
-      "title": "[Perfect, Good, Needs Work]",
+      "title": "",
       "score": 0,
-      "suggestion": "[Text suggestion including if more key results are recommended and text in 10-15 words]"
+      "suggestion": ""
     }
   }
 }

@@ -4,21 +4,30 @@ export const okrPrompt = (
   industry: string,
   language: string,
 ) => `
-Act as an OKR expert. Generate **8 unique and inspiring Objectives** aligned to:
+Act as an OKR expert. Create **8 fully unique and high-impact Objectives** that align tightly with:
 - Strategy: ${strategy}
 - Role: ${role}
 - Industry: ${industry}
 
-Rules:
-1. Each objective must be:
-   - **Qualitative, action-oriented, ambitious, and inspiring.**
-   - Include a short **title** (max 10 words). Each title must be **completely unique** within this response and not repeat past titles.
-   - Include a **difficulty** rating between 1 and 5 (1 = easy, 5 = very hard).
-2. Ensure strict alignment with the strategy: ${strategy}.
-3. Focus on objectives the ${role} can directly influence in the ${industry}.
-4. Avoid repeating similar objectives. Make each objective **distinct and fresh**.
-5. Use a **different example** for each objective. Introduce creative actions.
-6. Write the response in **${language}**.
+Strict Rules:
+1. Each objective must:
+   - Be qualitative, inspiring, and action-driven.
+   - Have a **short, unique, and highly varied title** (max 10 words).  
+   - Titles must avoid fixed patterns, avoid repeated phrasing, and use different structures each time.
+   - Titles must change their style, tone, rhythm, and word order every time.
+   - Include a difficulty score from 1 to 5.
+
+2. Every objective must align directly with the strategy: ${strategy}.  
+   No generic or vague objectives.
+
+3. Ensure the ${role} can realistically influence the objective within the ${industry} context.
+
+4. No repetition of ideas, themes, or sentence structures across any of the 8 objectives.
+
+5. Do not include examples. Do not reuse formats.  
+   Each objective must feel fresh, unpredictable, and naturally different.
+
+6. Write the full output in **${language}**.
 
 Output Format (JSON ONLY):
 {
@@ -34,5 +43,5 @@ Output Format (JSON ONLY):
     }
   ]
 }
-Please respond only in valid JSON, no extra text.
+Please respond only in valid JSON, nothing else.
 `

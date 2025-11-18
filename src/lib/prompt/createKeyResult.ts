@@ -4,7 +4,7 @@ export const krPrompt = (
   role: string,
   language: string,
 ) => `
-Generate exactly 3 Key Results for the Objective below.
+Generate exactly 2 Key Results for the Objective below.
 
 Rules:
 1. Each Key Result must include:
