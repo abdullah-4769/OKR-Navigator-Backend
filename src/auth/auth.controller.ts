@@ -1,4 +1,4 @@
-import { Controller, Post, Body,Param, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body,Param, Get, UseGuards, Request,Patch  } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -44,5 +44,14 @@ async setAvatar(
   async getUsersExcept(@Param('id') id: string) {
     return this.authService.getUsersExcept(id);
   }
+
+
+  @Patch('update/:id')
+async updateUser(
+  @Param('id') id: string,
+  @Body() body: { name?: string; email?: string; phone?: string; avatarPicId?: string }
+) {
+  return this.authService.updateUser(id, body);
+}
 
 }

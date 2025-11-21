@@ -125,5 +125,34 @@ async getUsersExcept(userId: string) {
   return users;
 }
 
+async updateUser(
+  userId: string,
+  data: { name?: string; email?: string; phone?: string; avatarPicId?: string }
+) {
+  const existingUser = await this.prisma.user.findUnique({ where: { id: userId } });
+  if (!existingUser) {
+    throw new Error('User not found');
+  }
+
+  const updatedUser = await this.prisma.user.update({
+    where: { id: userId },
+    data,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      language: true,
+      avatarPicId: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  return updatedUser;
+}
+
+
+
 
 }
