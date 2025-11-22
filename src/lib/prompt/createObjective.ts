@@ -4,33 +4,51 @@ export const okrPrompt = (
   industry: string,
   language: string,
 ) => `
-You are an expert OKR evaluation assistant.
-Act as an OKR expert. Create **8 fully unique and high-impact Objectives** that align tightly with:
-- Strategy: ${strategy}
-- Role: ${role}
-- Industry: ${industry}
+STRATEGIC OKR GENERATION: Create 8 objectives that are strategically precise, linguistically distinct, and operationally executable.
 
-Strict Rules:
-1. Each objective must:
-   - Be qualitative, inspiring, and action-driven.
-   - Have a **short, unique, and highly varied title** (max 10 words).  
-   - Titles must avoid fixed patterns, avoid repeated phrasing, and use different structures each time.
-   - Titles must change their style, tone, rhythm, and word order every time.
-   - Include a difficulty score from 1 to 5.
+CONTEXTUAL ANCHORS:
+• Core Strategy: "${strategy}"
+• Decision Authority: "${role}" 
+• Sector Constraints: "${industry}"
+• Output Language: "${language}"
 
-2. Every objective must align directly with the strategy: ${strategy}.  
-   No generic or vague objectives.
+CREATION ARCHITECTURE:
 
-3. Ensure the ${role} can realistically influence the objective within the ${industry} context.
+1. TITLE DESIGN SPECIFICATIONS:
+   • Maximum 6 words with zero syntactic repetition
+   • Rotate through: imperative commands, provocative questions, metaphorical constructs, outcome declarations, and challenge statements
+   • Each title must use distinct linguistic devices (alliteration, assonance, parallelism, antithesis)
+   • Enforce semantic diversity - no conceptual overlap in title focus areas
 
-4. No repetition of ideas, themes, or sentence structures across any of the 8 objectives.
+2. STRATEGIC COHERENCE VERIFICATION:
+   • Each objective must demonstrate unambiguous causal relationship to "${strategy}"
+   • Incorporate ${industry}-specific technologies, trends, and competitive dynamics
+   • Align with ${role}'s strategic decision-making authority and organizational influence
+   • Eliminate any objective that could be generic or industry-agnostic
 
-5. Do not include examples. Do not reuse formats.  
-   Each objective must feel fresh, unpredictable, and naturally different.
+3. QUALITY ASSURANCE METRICS:
+   • Difficulty scoring (1-5) must reflect implementation complexity, resource requirements, and organizational change magnitude
+   • Each objective must address a unique strategic vector within the overall strategy
+   • Descriptions should imply measurable impact without specifying metrics
+   • Balance radical ambition with operational plausibility
 
-6. Write the full output in **${language}**.
+4. PERSPECTIVE DIVERSIFICATION:
+   • Mandate alternating viewpoints: technological innovation, cultural transformation, process reengineering, talent evolution, market adaptation, operational excellence, strategic foresight, and ecosystem development
+   • Vary scope from tactical improvements to paradigm shifts
+   • Ensure each objective approaches the strategy from an orthogonal direction
 
-Output Format (JSON ONLY):
+VALIDATION CHECKPOINTS:
+• Does each title feel unexpectedly different from the others?
+• Could any objective be applied to a different industry or role?
+• Is the technology/innovation component explicitly addressed?
+• Does the difficulty score match the implementation challenge?
+
+OUTPUT REQUIREMENTS:
+• Pure JSON format only
+• Strict adherence to specified schema
+• Linguistic consistency in ${language}
+
+JSON OUTPUT STRUCTURE:
 {
   "strategy": "${strategy}",
   "role": "${role}",
@@ -38,11 +56,10 @@ Output Format (JSON ONLY):
   "language": "${language}",
   "okrs": [
     {
-      "title": "Objective title",
-      "description": "Objective description",
-      "difficulty": 1
+      "title": "Unique strategic objective",
+      "description": "Action-oriented description with clear value creation",
+      "difficulty": 1-5
     }
   ]
 }
-Please respond only in valid JSON, nothing else.
 `
