@@ -23,4 +23,25 @@ export class BonusScoreController {
     return this.bonusScoreService.checkTodayScore(userId);
   }
 
+
+  @Post('generate-scenario')
+  async generateScenario(
+    @Body('role') role: string,
+    @Body('industry') industry: string,
+    @Body('language') language: string,
+  ) {
+    return this.bonusScoreService.generateBonusScenario(role, industry, language);
+  }
+
+ @Post('evaluate-response')
+  async evaluateResponse(
+    @Body('userResponse') userResponse: string,
+    @Body('scenarioTitle') scenarioTitle: string,
+    @Body('scenarioDescription') scenarioDescription: string,
+    @Body('language') language: string,
+  ) {
+    return this.bonusScoreService.evaluateBonus(userResponse, scenarioTitle, scenarioDescription, language);
+  }
+
+
 }

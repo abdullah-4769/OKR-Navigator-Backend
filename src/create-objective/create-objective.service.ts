@@ -5,7 +5,7 @@ import { okrPrompt } from '../lib/prompt/createObjective'
 
 @Injectable()
 export class CreateObjectiveService {
-
+  private cache = new Map<string, any>()
   private fetchCounts: Map<number, number> = new Map()
 
   constructor(private prisma: PrismaService) {}
@@ -20,18 +20,17 @@ async generateAndSaveObjectives(
 ) {
   const prompt = okrPrompt(strategy, role, industry, language)
 
-  let objectivesData: Array<{ title: string; description?: string; difficulty?: number }> = []
+  let objectivesData: Array<{ title: string; description?: string }> = []
 
   try {
     const response = await llm.call([{ role: 'system', content: prompt }])
-    let text = response.text.replace(/```json/g, '').replace(/```/g, '').trim()
+    const text = response.text.replace(/```json/g, '').replace(/```/g, '').trim()
     const data = JSON.parse(text)
 
     if (Array.isArray(data.okrs)) {
-      objectivesData = data.okrs.map((o: any) => ({
-        title: o.title ?? '',
-        description: o.description ?? null,
-        difficulty: o.difficulty ?? 1,
+      objectivesData = data.okrs.map(o => ({
+        title: o.title?.trim() || '',
+        description: o.description?.slice(0, 120)?.trim() || null,
       }))
     }
   } catch (err) {
@@ -43,20 +42,18 @@ async generateAndSaveObjectives(
     return { error: 'No objectives generated' }
   }
 
-  await this.prisma.$transaction([
-    this.prisma.objective.deleteMany({ where: { strategyId } }),
-    this.prisma.objective.createMany({
-      data: objectivesData.map((obj) => ({
-        strategyId,
-        title: obj.title,
-        description: obj.description,
-        difficulty: obj.difficulty,
-      })),
-    }),
-  ])
+  const dbData = objectivesData.map(obj => ({
+    strategyId,
+    title: obj.title,
+    description: obj.description,
+  }))
+
+  await this.prisma.objective.deleteMany({ where: { strategyId } })
+  await this.prisma.objective.createMany({ data: dbData })
 
   return { message: 'Objectives saved', objectives: objectivesData }
 }
+
 
 
 

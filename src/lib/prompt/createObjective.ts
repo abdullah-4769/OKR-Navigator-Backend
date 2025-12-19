@@ -15,7 +15,7 @@ CONTEXTUAL ANCHORS:
 CREATION ARCHITECTURE:
 
 1. TITLE DESIGN SPECIFICATIONS:
-   • Maximum 6 words with zero syntactic repetition
+   • Maximum 3 words with zero syntactic repetition 
    • Rotate through: imperative commands, provocative questions, metaphorical constructs, outcome declarations, and challenge statements
    • Each title must use distinct linguistic devices (alliteration, assonance, parallelism, antithesis)
    • Enforce semantic diversity - no conceptual overlap in title focus areas
@@ -27,7 +27,7 @@ CREATION ARCHITECTURE:
    • Eliminate any objective that could be generic or industry-agnostic
 
 3. QUALITY ASSURANCE METRICS:
-   • Difficulty scoring (1-5) must reflect implementation complexity, resource requirements, and organizational change magnitude
+
    • Each objective must address a unique strategic vector within the overall strategy
    • Descriptions should imply measurable impact without specifying metrics
    • Balance radical ambition with operational plausibility
@@ -41,7 +41,7 @@ VALIDATION CHECKPOINTS:
 • Does each title feel unexpectedly different from the others?
 • Could any objective be applied to a different industry or role?
 • Is the technology/innovation component explicitly addressed?
-• Does the difficulty score match the implementation challenge?
+
 
 OUTPUT REQUIREMENTS:
 • Pure JSON format only
@@ -57,8 +57,7 @@ JSON OUTPUT STRUCTURE:
   "okrs": [
     {
       "title": "Unique strategic objective",
-      "description": "Action-oriented description with clear value creation",
-      "difficulty": 1-5
+      "description": "Action-oriented description with clear value creation and max 10 words",
     }
   ]
 }

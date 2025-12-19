@@ -1,17 +1,13 @@
 export class CreateBonusScoreDto {
   userId: string;
   overallScore: number;
-  normalizedScore: string;
-  points: string;
+  status: 'Accepted' | 'Partially Relevant' | 'Rejected';
+  feedbackText: string;
+  feedbackTone: 'positive' | 'neutral' | 'corrective';
+  feedbackTip: string;
+  strengths: string[]; 
+  improvements: string[];
+  badge: 'Gold' | 'Silver' | 'Bronze' | 'None';
   title: string;
-  feedback: string;
-  strategyAlignmentTitle: string;
-  strategyAlignmentScore: number;
-  strategyAlignmentSuggestion: string;
-  objectiveAlignmentTitle: string;
-  objectiveAlignmentScore: number;
-  objectiveAlignmentSuggestion: string;
-  keyResultQualityTitle: string;
-  keyResultQualityScore: number;
-  keyResultQualitySuggestion: string;
+  scenarioDescription: string;
 }
