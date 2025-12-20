@@ -318,18 +318,17 @@ model PointAdjustment {
 
 
 model BonusScore {
-  id                  Int      @id @default(autoincrement())
-  userId              String
-  overallScore        Int
-  status              String?   // optional for migration
-  feedbackText        String?   // optional for migration
-  feedbackTone        String?   // optional for migration
-  feedbackTip         String?   // optional for migration
-  strengths           Json?     // optional for migration
-  improvements        Json?     // optional for migration
-  badge               String?   // optional for migration
-  title               String
-  scenarioDescription String?   // optional for migration
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id                Int      @id @default(autoincrement())
+  userId            String
+  finalScore        Int
+  badge             String
+  dimensionScores   Json
+  feedback          Json
+  strengths         String[]
+  improvements      String[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
+
+
+

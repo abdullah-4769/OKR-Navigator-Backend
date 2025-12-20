@@ -1,32 +1,41 @@
-export const bonusScenario = (
+export const dailyTrainingCase = (
   role: string,
   industry: string,
-  language: string,
+  language: string
 ) => `
-BONUS SCENARIO GENERATION: Create a strategic scenario for a serious game player.
+DAILY TRAINING CASE GENERATION: Create a short realistic business case for skill practice.
 
 CONTEXT:
-• Decision Role: "${role}"
-• Industry Sector: "${industry}"
-• Output Language: "${language}"
+• Role: "${role}"
+• Industry: "${industry}"
+• Language: "${language}"
 
-SCENARIO CREATION RULES:
-1. TITLE:
-   • Maximum 6 words
-   • Clear, engaging, relevant to role/industry
-2. DESCRIPTION:
+CASE CREATION RULES:
+
+2. VISION:
+   • Maximum 12 words
+   • Describe what the organization wants to achieve long term
+
+3. STRATEGY:
    • Maximum 15 words
-   • Describe organizational context, main challenge, and constraints
-   • Must be realistic and business-focused
-3. STRATEGIC RELEVANCE:
-   • Scenario must allow OKR analysis
-   • Avoid suggesting objectives, key results, or solutions
+   • Describe the current high level approach
+
+4. PROBLEMS:
+   • 2 to 3 short points
+   • Each point maximum 10 words
+   • Focus on real operational or strategic challenges
+
+IMPORTANT:
+• Do not suggest solutions
+• Do not mention objectives or key results
+• Keep it realistic and business focused
 
 OUTPUT REQUIREMENTS:
-• Pure JSON format only
-• Use the following structure:
+• Pure JSON only
+• Use this structure:
 {
-  "title": "Scenario title",
-  "description": "Brief context and strategic challenge"
+  "vision": "",
+  "strategy": "",
+  "problems": []
 }
 `

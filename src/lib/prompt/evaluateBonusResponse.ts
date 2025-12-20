@@ -1,49 +1,63 @@
-export const evaluateBonusResponse = (
-  scenarioTitle: string,
-  scenarioDescription: string,
+export const evaluateDailyTrainingResponse = (
+  industry: string,
+  vision: string,
+  strategy: string,
+  problems: string,
   userResponse: string,
   language: string
 ) => `
-You are an expert OKR evaluator for a serious game. A player has completed a bonus OKR mini-simulation challenge.
+You are an expert OKR evaluator for a serious game. A player has completed a daily training case.
 
-SCENARIO:
-• Title: "${scenarioTitle}"
-• Description: "${scenarioDescription}"
+CASE CONTEXT:
+• Industry: "${industry}"
+• Vision: "${vision}"
+• Strategy: "${strategy}"
+• Problems faced: "${problems}"
 
 PLAYER RESPONSE:
 "${userResponse}"
 
 EVALUATION CRITERIA:
-1. Alignment with scenario: How well the response addresses the organizational context and strategic challenge.
-2. Relevance to potential OKRs: Evaluate if the response could lead to meaningful objectives, key results, and initiatives.
-3. Measurable impact: Are the suggested actions or ideas actionable and measurable?
-4. Clarity and feasibility: Is the response clear, realistic, and implementable in a business context?
-5. Creativity: Does the response show originality while staying aligned with strategy?
+1. Objective quality: Is the Objective clear, inspiring, measurable, and aligned with strategy?
+2. Key Results quality: Are the 2 Key Results clear, measurable, and aligned with the Objective?
+3. Initiative pertinence: Is the submitted initiative relevant, feasible, and aligned with the Key Result and strategy?
+4. Global alignment: Is the overall submission coherent and consistent with vision, strategy, and context?
+5. Contextual relevance: Does the response address industry-specific challenges and problems faced?
 
 SCORING:
-• Give a relevance score out of 100%
-• If score ≥ 80%, mark as "Accepted"
-• If score < 80%, mark as "Partially Relevant" and provide bonus tips
+• Give a score out of 100%
+• Provide individual scores (0-100) for each dimension: objective, key_results, initiatives, alignment, relevance
+• If overall score ≥ 80%, mark as "Accepted"
+• If score < 80%, mark as "Partially Relevant" and give a short improvement tip
 
 FEEDBACK:
-• Provide enriched feedback in the form of text and tone (positive/neutral/corrective)
-• Include strengths and areas for improvement
-• Give a short tip if score <80% to help player improve
+• Always provide concise feedback text (max 6 words)
+• Include 2 strengths and 2 improvements always
+• Add a short improvement tip if score <80% (max 15 words)
+• Suggest badge: Gold / Silver / Bronze / None
 
 OUTPUT REQUIREMENTS:
-• Pure JSON format
-• Structure:
+• Pure JSON format with full structure:
 {
-  "score": 0-100,
-  "status": "Accepted / Partially Relevant / Rejected",
-  "feedback": {
-      "text": "Feedback message and maximum 6 words",
+  "final_score": 0-100,
+  "dimension_scores": {
+    "objective": 0-100,
+    "key_results": 0-100,
+    "initiatives": 0-100,
+    "alignment": 0-100,
+    "relevance": 0-100
+  },
+  "level": "Gold / Silver / Bronze / None",
+  "validation_pass": true/false,
+  "feedback": [
+    {
+      "text": "Concise feedback text",
       "tone": "positive/neutral/corrective",
-      "tip": "Bonus tip for improvement if score <80% and maximum 15 words",
-      "strengths": ["List up to 2 strengths"],
-      "improvements": ["List up to 2 areas to improve"],
-      "badge": "Gold / Silver / Bronze / None"
-  }
+      "tip": "Bonus tip if score <80%",
+      "strengths": ["Strength 1", "Strength 2"],
+      "improvements": ["Improvement 1", "Improvement 2"]
+    }
+  ],
 }
 OUTPUT LANGUAGE: "${language}"
 `

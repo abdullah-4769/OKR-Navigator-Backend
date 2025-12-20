@@ -30,18 +30,28 @@ export class BonusScoreController {
     @Body('industry') industry: string,
     @Body('language') language: string,
   ) {
-    return this.bonusScoreService.generateBonusScenario(role, industry, language);
+    return this.bonusScoreService.generateDailyTrainingCase(role, industry, language);
   }
 
- @Post('evaluate-response')
-  async evaluateResponse(
-    @Body('userResponse') userResponse: string,
-    @Body('scenarioTitle') scenarioTitle: string,
-    @Body('scenarioDescription') scenarioDescription: string,
-    @Body('language') language: string,
-  ) {
-    return this.bonusScoreService.evaluateBonus(userResponse, scenarioTitle, scenarioDescription, language);
-  }
+@Post('evaluate-response')
+async evaluateResponse(
+  @Body('userResponse') userResponse: string,
+  @Body('industry') industry: string,
+  @Body('vision') vision: string,
+  @Body('strategy') strategy: string,
+  @Body('problems') problems: string,
+  @Body('language') language: string,
+) {
+  return this.bonusScoreService.evaluateDailyTraining(
+    userResponse,
+    industry,
+    vision,
+    strategy,
+    problems,
+    language
+  );
+}
+
 
 
 }
