@@ -52,6 +52,17 @@ async evaluateResponse(
   );
 }
 
+@Get('streak/:userId')
+async getUserStreak(@Param('userId') userId: string) {
+  const streak = await this.bonusScoreService.getUserStreak(userId)
+
+  return {
+    streak,
+    message: `Your last streak is ${streak} days`
+  }
+}
+
+
 
 
 }

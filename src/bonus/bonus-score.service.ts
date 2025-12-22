@@ -183,6 +183,50 @@ async evaluateDailyTraining(
   }
 }
 
+async getUserStreak(userId: string) {
+  const records = await this.prisma.bonusScore.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' }
+  })
+
+  if (records.length === 0) {
+    return 0
+  }
+
+  const uniqueDates = new Set<string>()
+
+  for (const record of records) {
+    const date = new Date(record.createdAt)
+    const dateStr = date.toISOString().split('T')[0]
+    uniqueDates.add(dateStr)
+  }
+
+  const sortedDates = Array.from(uniqueDates)
+    .map(dateStr => new Date(dateStr))
+    .sort((a, b) => b.getTime() - a.getTime())
+
+  let streak = 1
+  let currentDate = new Date(sortedDates[0])
+  currentDate.setHours(0, 0, 0, 0)
+
+  for (let i = 1; i < sortedDates.length; i++) {
+    const prevDate = new Date(sortedDates[i])
+    prevDate.setHours(0, 0, 0, 0)
+
+    const timeDiff = currentDate.getTime() - prevDate.getTime()
+    const dayDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
+
+    if (dayDiff === 1) {
+      streak++
+      currentDate = prevDate
+    } else {
+      break
+    }
+  }
+
+  return streak
+}
+
 
 
   
