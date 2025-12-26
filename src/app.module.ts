@@ -39,6 +39,7 @@ import { TeamEvaluateInitiativesModule } from './team-evaluation/evaluate-initia
 import { TeamFinalOkrEvaluationModule } from './team-evaluation/final-okr-evaluation/final-okr-evaluation.module'; 
 import { GoogleModule } from './google/google.module';
 import { BonusScoreModule } from './bonus/bonus-score.module';
+import { MailModule } from './mail/mail.module'
 
 
 @Module({
@@ -78,7 +79,7 @@ import { BonusScoreModule } from './bonus/bonus-score.module';
     ChallengesModule,
     ChallengeModeScoreModule,
     GoogleModule,
-    BonusScoreModule,
+    BonusScoreModule,MailModule,
   ],
   controllers: [AppController],
   providers: [PrismaService],
