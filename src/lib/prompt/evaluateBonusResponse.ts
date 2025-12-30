@@ -17,6 +17,12 @@ CASE CONTEXT:
 PLAYER RESPONSE:
 "${userResponse}"
 
+EVALUATION INSTRUCTIONS:
+• Give a generally positive score reflecting normal evaluation.
+• Avoid harsh scoring; reward effort and relevance.
+• Slight deductions only for minor issues.
+• Keep feedback concise and encouraging.
+
 EVALUATION CRITERIA:
 1. Objective quality: Is the Objective clear, inspiring, measurable, and aligned with strategy?
 2. Key Results quality: Are the 2 Key Results clear, measurable, and aligned with the Objective?
@@ -25,7 +31,7 @@ EVALUATION CRITERIA:
 5. Contextual relevance: Does the response address industry-specific challenges and problems faced?
 
 SCORING:
-• Give a score out of 100%
+• Give a score out of 100% 
 • Provide individual scores (0-100) for each dimension: objective, key_results, initiatives, alignment, relevance
 • If overall score ≥ 80%, mark as "Accepted"
 • If score < 80%, mark as "Partially Relevant" and give a short improvement tip
