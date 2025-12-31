@@ -16,6 +16,8 @@ model User {
   phone     String?
   language  String?  @default("en")
   avatarPicId String? 
+    otp         String?   // new field for OTP
+  otpExpiry   DateTime? // new field for OTP expiration
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   challengesHosted Challenge[] @relation("HostChallenges")

@@ -54,4 +54,22 @@ async updateUser(
   return this.authService.updateUser(id, body);
 }
 
+// Send OTP
+@Post('send-otp')
+async sendOtp(@Body('email') email: string) {
+  return this.authService.sendOtp(email);
+}
+
+// Reset password
+@Post('reset-password')
+async resetPassword(
+  @Body('email') email: string,
+  @Body('otp') otp: string,
+  @Body('newPassword') newPassword: string
+) {
+  return this.authService.resetPassword(email, otp, newPassword);
+}
+
+
+
 }

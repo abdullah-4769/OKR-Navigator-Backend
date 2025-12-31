@@ -2,12 +2,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../lib/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+        private mailService: MailService
   ) {}
 
   // Register new user
@@ -153,6 +155,43 @@ async updateUser(
 }
 
 
+  async sendOtp(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) throw new Error('User not found');
 
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiry = new Date(Date.now() + 1 * 60 * 1000); // 5 minutes
+
+    await this.prisma.user.update({
+      where: { email },
+      data: { otp, otpExpiry: expiry },
+    });
+
+    await this.mailService.sendMail(
+      email,
+      'Your OTP Code',
+      user.name,
+      otp
+    );
+
+    return { message: 'OTP sent successfully' };
+  }
+  async resetPassword(email: string, otp: string, newPassword: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) throw new Error('User not found');
+    if (!user.otp || !user.otpExpiry) throw new Error('OTP not generated');
+
+    if (user.otp !== otp) throw new Error('Invalid OTP');
+    if (user.otpExpiry < new Date()) throw new Error('OTP expired');
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await this.prisma.user.update({
+      where: { email },
+      data: { password: hashedPassword, otp: null, otpExpiry: null },
+    });
+
+    return { message: 'Password reset successfully' };
+  }
 
 }

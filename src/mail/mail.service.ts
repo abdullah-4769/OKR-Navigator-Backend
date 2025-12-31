@@ -19,13 +19,21 @@ export class MailService {
     })
   }
 
-  private getOtpTemplate(name: string, otp: string) {
-    const templatePath = path.join(__dirname, 'templates', 'otp-template.html')
-    let template = fs.readFileSync(templatePath, 'utf-8')
-    const otpDigits = otp.split('').map(d => `<div class="otp-digit">${d}</div>`).join('')
-    template = template.replace('{{name}}', name).replace('{{otpDigits}}', otpDigits)
-    return template
-  }
+private getOtpTemplate(name: string, otp: string) {
+  const templatePath = path.join(process.cwd(), 'src', 'mail', 'templates', 'otp-template.html');
+  let template = fs.readFileSync(templatePath, 'utf-8');
+
+  template = template.replace('{{name}}', name);
+
+  otp.split('').forEach((d, index) => {
+    template = template.replace(`{{otp${index + 1}}}`, d);
+  });
+
+  return template;
+}
+
+
+
 
   async sendMail(to: string, subject: string, name: string, otp: string) {
     const html = this.getOtpTemplate(name, otp)

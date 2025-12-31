@@ -1,59 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your OTP Code</title>
-    <style>
-        body { margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; background-color:#f4f4f4; }
-        .email-container { width:100%; max-width:600px; margin:20px auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
-        .header { background:#C43917; padding:40px 20px; text-align:center; }
-        .header-title { font-family:'Gotham','Helvetica','Arial',sans-serif; font-weight:bold; font-size:40px; color:#fff; margin:0; letter-spacing:2px; }
-        .content { padding:30px 20px; text-align:center; }
-        .greeting { font-size:18px; color:#333; margin-bottom:15px; line-height:1.5; text-align:left; }
-        .instruction { font-size:16px; color:#555; margin-bottom:20px; line-height:1.5; }
-        .otp-label { font-size:14px; color:#666; margin-bottom:15px; text-transform:uppercase; letter-spacing:0.5px; }
-        .otp-code { display:flex; justify-content:center; gap:10px; margin-bottom:25px; }
-        .otp-digit { width:50px; height:50px; background:#C43917; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:bold; color:#fff; font-family:'Courier New', monospace; box-shadow:0 2px 8px rgba(196,57,23,0.3); }
-        .expiry-notice { background:#fff3cd; border-left:4px solid #ffc107; padding:10px; margin-bottom:20px; text-align:center; border-radius:4px; font-size:14px; }
-        .security-tips { text-align:left; margin:15px 0; padding:15px; background:#e7f3ff; border-radius:6px; }
-        .security-tips h3 { margin:0 0 10px 0; font-size:14px; color:#C43917; }
-        .security-tips ul { margin:0; padding-left:20px; font-size:13px; color:#a52f13; line-height:1.6; }
-        .warning { font-size:13px; color:#666; margin-top:15px; padding:10px; background:#f8f9fa; border-radius:6px; line-height:1.4; text-align:center; }
-        .footer { background:#fff; padding:15px; text-align:center; border-top:1px solid #e9ecef; }
-        .footer p { margin:5px 0; font-size:12px; color:#999; }
-        .logo-img { max-width:120px; margin:10px auto; display:block; }
-        @media only screen and (max-width:600px) { .otp-digit { width:45px; height:45px; font-size:20px; } .content { padding:20px 15px; } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your OTP Code</title>
+<style>
+    body { margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; background-color:#f4f4f4; }
+    .email-container { width:100%; max-width:600px; margin:20px auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+    .header { background:#C43917; padding:40px 20px; text-align:center; }
+    .header-title { font-family:'Gotham','Helvetica','Arial',sans-serif; font-weight:bold; font-size:40px; color:#fff; margin:0; letter-spacing:2px; }
+    .content { padding:30px 20px; text-align:center; }
+    .greeting { font-size:18px; color:#333; margin-bottom:15px; line-height:1.5; text-align:left; }
+    .instruction { font-size:16px; color:#555; margin-bottom:20px; line-height:1.5; }
+    .otp-label { font-size:14px; color:#666; margin-bottom:15px; text-transform:uppercase; letter-spacing:0.5px; }
+    .expiry-notice { background:#fff3cd; border-left:4px solid #ffc107; padding:10px; margin-bottom:20px; text-align:center; border-radius:4px; font-size:14px; }
+    .security-tips { text-align:left; margin:15px 0; padding:15px; background:#e7f3ff; border-radius:6px; }
+    .security-tips h3 { margin:0 0 10px 0; font-size:14px; color:#C43917; }
+    .security-tips ul { margin:0; padding-left:20px; font-size:13px; color:#a52f13; line-height:1.6; }
+    .warning { font-size:13px; color:#666; margin-top:15px; padding:10px; background:#f8f9fa; border-radius:6px; line-height:1.4; text-align:center; }
+    .footer { background:#fff; padding:15px; text-align:center; border-top:1px solid #e9ecef; }
+    .footer p { margin:5px 0; font-size:12px; color:#999; }
+    .logo-img { max-width:120px; margin:10px auto; display:block; }
+    @media only screen and (max-width:600px) { 
+        .otp-circle { width:45px !important; height:45px !important; font-size:20px !important; }
+        .content { padding:20px 15px; }
+    }
+</style>
 </head>
 <body>
-    <div class="email-container">
-        <div class="header">
-            <h1 class="header-title">OKR Navigator</h1>
-        </div>
-        <div class="content">
-            <p class="greeting">Hello <strong>{{name}}</strong>,</p>
-            <p class="instruction">We received a request to verify your account. To complete the verification process, please use the One-Time Password (OTP) below.</p>
-            <p class="otp-label">Your Verification Code</p>
-            <div class="otp-code">
-                {{otpDigits}}
-            </div>
-            <div class="expiry-notice"><strong>Important:</strong> This code will expire in <strong>1 minute</strong>. Please use it immediately.</div>
-            <div class="security-tips">
-                <h3>Security Tips</h3>
-                <ul>
-                    <li>Never share this code with anyone</li>
-                    <li>Focus RH Games will never ask for your OTP via phone or email</li>
-                    <li>If you didn't request this code, please secure your account immediately</li>
-                </ul>
-            </div>
-            <div class="warning">Didn't request this code? Please ignore this email or consider changing your password to secure your account.</div>
-        </div>
-        <div class="footer">
-            <img src="https://i.ibb.co/CK73ndZt/Whats-App-Image-2025-12-26-at-12-01-05-PM.jpg" alt="Focus RH Games Logo" class="logo-img">
-            <p>© 2024 Focus RH Games. All rights reserved.</p>
-            <p>This is an automated message, please do not reply to this email.</p>
-        </div>
-    </div>
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4; padding:20px 0;">
+<tr>
+<td align="center">
+    <table class="email-container" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td class="header">
+                <h1 class="header-title">OKR Navigator</h1>
+            </td>
+        </tr>
+        <tr>
+            <td class="content">
+                <p class="greeting">Hello <strong>{{name}}</strong>,</p>
+                <p class="instruction">We received a request to verify your account. To complete the verification process, please use the One-Time Password (OTP) below.</p>
+                <p class="otp-label">Your Verification Code</p>
+                <!-- OTP Table -->
+                <table align="center" cellpadding="10" cellspacing="10">
+                   <tr>
+    <td align="center" valign="middle" width="40" height="40" style="background:#C43917; border-radius:50%; font-family:'Courier New', monospace; font-size:20px; font-weight:bold; color:#fff;">{{otp1}}</td>
+    <td align="center" valign="middle" width="40" height="40" style="background:#C43917; border-radius:50%; font-family:'Courier New', monospace; font-size:20px; font-weight:bold; color:#fff;">{{otp2}}</td>
+    <td align="center" valign="middle" width="40" height="40" style="background:#C43917; border-radius:50%; font-family:'Courier New', monospace; font-size:20px; font-weight:bold; color:#fff;">{{otp3}}</td>
+    <td align="center" valign="middle" width="40" height="40" style="background:#C43917; border-radius:50%; font-family:'Courier New', monospace; font-size:20px; font-weight:bold; color:#fff;">{{otp4}}</td>
+    <td align="center" valign="middle" width="40" height="40" style="background:#C43917; border-radius:50%; font-family:'Courier New', monospace; font-size:20px; font-weight:bold; color:#fff;">{{otp5}}</td>
+    <td align="center" valign="middle" width="40" height="40" style="background:#C43917; border-radius:50%; font-family:'Courier New', monospace; font-size:20px; font-weight:bold; color:#fff;">{{otp6}}</td>
+</tr>
+
+                </table>
+                <div class="expiry-notice"><strong>Important:</strong> This code will expire in <strong>1 minute</strong>. Please use it immediately.</div>
+                <div class="security-tips">
+                    <h3>Security Tips</h3>
+                    <ul>
+                        <li>Never share this code with anyone</li>
+                        <li>Focus RH Games will never ask for your OTP via phone or email</li>
+                        <li>If you didn't request this code, please secure your account immediately</li>
+                    </ul>
+                </div>
+                <div class="warning">Didn't request this code? Please ignore this email or consider changing your password to secure your account.</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="footer">
+                <img src="https://i.ibb.co/CK73ndZt/Whats-App-Image-2025-12-26-at-12-01-05-PM.jpg" alt="Focus RH Games Logo" class="logo-img">
+                <p>© 2024 Focus RH Games. All rights reserved.</p>
+                <p>This is an automated message, please do not reply to this email.</p>
+            </td>
+        </tr>
+    </table>
+</td>
+</tr>
+</table>
 </body>
 </html>
