@@ -155,27 +155,30 @@ async updateUser(
 }
 
 
-  async sendOtp(email: string) {
-    const user = await this.prisma.user.findUnique({ where: { email } });
-    if (!user) throw new Error('User not found');
+async sendOtp(email: string) {
+  const user = await this.prisma.user.findUnique({ where: { email } })
+  if (!user) throw new Error('User not found')
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiry = new Date(Date.now() + 1 * 60 * 1000); // 5 minutes
+  const otp = Math.floor(100000 + Math.random() * 900000).toString()
+  const expiry = new Date(Date.now() + 1 * 60 * 1000)
 
+  void (async () => {
     await this.prisma.user.update({
       where: { email },
       data: { otp, otpExpiry: expiry },
-    });
+    })
 
-    await this.mailService.sendMail(
-      email,
-      'Your OTP Code',
-      user.name,
-      otp
-    );
+    this.mailService.sendMail(email, 'Your OTP Code', user.name, otp)
+      .catch(err => console.error('Error sending OTP email:', err))
+  })()
 
-    return { message: 'OTP sent successfully' };
-  }
+  return { message: 'OTP sent successfully' }
+}
+
+
+
+
+
   async resetPassword(email: string, otp: string, newPassword: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) throw new Error('User not found');
