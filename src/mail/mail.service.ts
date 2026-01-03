@@ -46,7 +46,7 @@ export class MailService implements OnModuleInit {
   async sendMail(to: string, subject: string, name: string, otp: string) {
     const html = this.getOtpHtml(name, otp)
     this.transporter.sendMail({
-      from: '"Focus RH Games" <your-email@focusrhgames.com>',
+      from: '"Focus RH Games" <sender@focusrhgames.com>',
       to,
       subject,
       html,
@@ -56,7 +56,7 @@ export class MailService implements OnModuleInit {
  async sendWeeklyActive(to: string, data: any) {
     const html = this.renderTemplate('weekly-active.html', data)
     await this.transporter.sendMail({
-      from: '"Focus RH Games" <your-email@focusrhgames.com>',
+      from: '"Focus RH Games" <sender@focusrhgames.com>',
       to,
       subject: 'Your Weekly Performance Update',
       html,
@@ -66,7 +66,7 @@ export class MailService implements OnModuleInit {
   async sendWeeklyInactive(to: string, data: any) {
     const html = this.renderTemplate('weekly-inactive.html', data)
     await this.transporter.sendMail({
-      from: '"Focus RH Games" <your-email@focusrhgames.com>',
+      from: '"Focus RH Games" <sender@focusrhgames.com>',
       to,
       subject: 'We Miss You at Focus RH Games',
       html,
