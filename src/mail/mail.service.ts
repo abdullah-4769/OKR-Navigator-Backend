@@ -24,6 +24,14 @@ export class MailService implements OnModuleInit {
   async onModuleInit() {
     const templatePath = path.join(process.cwd(), 'src', 'mail', 'templates', 'otp-template.html')
     this.otpTemplate = await fs.promises.readFile(templatePath, 'utf-8')
+ 
+ 
+   const weeklyActivePath = path.join(process.cwd(), 'src', 'mail', 'templates', 'weekly-active.html')
+    const weeklyInactivePath = path.join(process.cwd(), 'src', 'mail', 'templates', 'weekly-inactive.html')
+
+    this.templates['weekly-active.html'] = await fs.promises.readFile(weeklyActivePath, 'utf-8')
+    this.templates['weekly-inactive.html'] = await fs.promises.readFile(weeklyInactivePath, 'utf-8')
+ 
   }
 
   private getOtpHtml(name: string, otp: string) {
@@ -45,31 +53,34 @@ export class MailService implements OnModuleInit {
     }).catch(err => console.error('Email send error:', err))
   }
 
-async sendWeeklyActive(to: string, data: any) {
-  const html = this.renderTemplate('weekly-active.html', data)
-  await this.transporter.sendMail({
-    to,
-    subject: 'Your Weekly Performance Update',
-    html,
-  })
-}
+ async sendWeeklyActive(to: string, data: any) {
+    const html = this.renderTemplate('weekly-active.html', data)
+    await this.transporter.sendMail({
+      from: '"Focus RH Games" <your-email@focusrhgames.com>',
+      to,
+      subject: 'Your Weekly Performance Update',
+      html,
+    }).catch(err => console.error('Email send error:', err))
+  }
 
-async sendWeeklyInactive(to: string, data: any) {
-  const html = this.renderTemplate('weekly-inactive.html', data)
-  await this.transporter.sendMail({
-    to,
-    subject: 'We Miss You at Focus RH Games',
-    html,
-  })
-}
+  async sendWeeklyInactive(to: string, data: any) {
+    const html = this.renderTemplate('weekly-inactive.html', data)
+    await this.transporter.sendMail({
+      from: '"Focus RH Games" <your-email@focusrhgames.com>',
+      to,
+      subject: 'We Miss You at Focus RH Games',
+      html,
+    }).catch(err => console.error('Email send error:', err))
+  }
 
-private renderTemplate(file: string, data: any) {
-  let template = this.templates[file]
-  Object.keys(data).forEach(key => {
-    template = template.replaceAll(`{{${key}}}`, String(data[key]))
-  })
-  return template
-}
+  private renderTemplate(file: string, data: any) {
+    let template = this.templates[file]
+    if (!template) throw new Error(`Template ${file} not loaded`)
+    Object.keys(data).forEach(key => {
+      template = template.replaceAll(`{{${key}}}`, String(data[key]))
+    })
+    return template
+  }
 
 
 

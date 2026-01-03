@@ -1,31 +1,23 @@
 import { Injectable } from '@nestjs/common'
 import { Cron } from '@nestjs/schedule'
-import { InjectQueue } from '@nestjs/bull'
-import type { Queue } from 'bull'
 import { PrismaService } from '../lib/prisma/prisma.service'
-
-interface WeeklyMailJob {
-  user: any
-  activity: any
-  type: 'active' | 'inactive'
-}
+import { MailService } from './mail.service'
 
 @Injectable()
 export class MailCron {
   constructor(
     private prisma: PrismaService,
-    @InjectQueue('weeklyMail') private queue: Queue<WeeklyMailJob>,
+    private mailService: MailService,
   ) {}
 
-  @Cron('0 9 * * 1')
+  @Cron('0 9 * * 1') // every Monday at 9 AM
   async handleWeeklyMail() {
     const lastWeek = new Date()
     lastWeek.setDate(lastWeek.getDate() - 7)
+    lastWeek.setHours(0, 0, 0, 0)
 
     const users = await this.prisma.user.findMany({
-      where: {
-        role: { not: 'admin' },
-      },
+      where: { role: { not: 'admin' } },
     })
 
     for (const user of users) {
@@ -34,36 +26,42 @@ export class MailCron {
 
       const bonus = await this.prisma.bonusScore.findFirst({
         where: { userId: user.id, createdAt: { gte: lastWeek } },
-        orderBy: { createdAt: 'desc' },
       })
-      if (bonus) {
-        activity = bonus
-        type = 'active'
-      }
+      if (bonus) activity = bonus
 
       if (!activity) {
         const solo = await this.prisma.soloScore.findFirst({
           where: { userId: user.id, createdAt: { gte: lastWeek } },
-          orderBy: { createdAt: 'desc' },
         })
-        if (solo) {
-          activity = solo
-          type = 'active'
-        }
+        if (solo) activity = solo
       }
 
       if (!activity) {
         const team = await this.prisma.finalTeamScore.findFirst({
           where: { userId: user.id, createdAt: { gte: lastWeek } },
-          orderBy: { createdAt: 'desc' },
         })
-        if (team) {
-          activity = team
-          type = 'active'
-        }
+        if (team) activity = team
       }
 
-      await this.queue.add({ user, activity, type })
+      if (activity) type = 'active'
+
+      const payload = {
+        name: user.name,
+        score: activity?.score || activity?.finalScore || 0,
+        badge: activity?.badge || '',
+        appLink: process.env.APP_URL,
+        unsubscribeLink: `${process.env.APP_URL}/unsubscribe`,
+      }
+
+      try {
+        if (type === 'active') {
+          await this.mailService.sendWeeklyActive(user.email, payload)
+        } else {
+          await this.mailService.sendWeeklyInactive(user.email, payload)
+        }
+      } catch (err) {
+        // handle error if needed
+      }
     }
   }
 }

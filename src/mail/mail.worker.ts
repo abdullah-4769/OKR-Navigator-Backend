@@ -8,6 +8,10 @@ export class MailWorker {
 
   @Process()
   async handle(job: Job<any>) {
+    console.log('--- Processing Job ---')
+    console.log('Job ID:', job.id)
+    console.log('Job data:', job.data)
+
     const { user, activity, type } = job.data
 
     const payload = {
@@ -18,10 +22,17 @@ export class MailWorker {
       unsubscribeLink: `${process.env.APP_URL}/unsubscribe`,
     }
 
+    console.log(`User: ${user.name} (${user.email}), Type: ${type}`)
+
     if (type === 'active') {
+      console.log(`Sending active email to ${user.email}`)
       await this.mailService.sendWeeklyActive(user.email, payload)
     } else {
+      console.log(`Sending inactive email to ${user.email}`)
       await this.mailService.sendWeeklyInactive(user.email, payload)
     }
+
+    console.log(`Email sent to ${user.email} successfully`)
+    console.log('--- Job Completed ---\n')
   }
 }
