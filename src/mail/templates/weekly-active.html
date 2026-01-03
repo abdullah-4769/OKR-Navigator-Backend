@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Performance Update</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f8f8f8;
+}
+
+.email-wrapper {
+  width: 100%;
+  padding: 40px 20px;
+  background: #f8f8f8;
+}
+
+.email-container {
+  max-width: 650px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.15);
+}
+
+.header {
+  background: linear-gradient(135deg, #8B0000, #C43917);
+  padding: 55px 40px;
+  text-align: center;
+}
+
+.header-title {
+  font-size: 36px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.header-subtitle {
+  margin-top: 8px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.content {
+  padding: 45px 40px;
+}
+
+.greeting {
+  font-size: 24px;
+  font-weight: 600;
+  color: #8B0000;
+  margin-bottom: 14px;
+}
+
+.intro-text {
+  font-size: 15px;
+  color: #444;
+  line-height: 1.7;
+  margin-bottom: 35px;
+}
+
+.performance-section {
+  background: linear-gradient(135deg, #C43917, #ff4b2b);
+  border-radius: 12px;
+  padding: 35px;
+  color: #ffffff;
+  margin-bottom: 40px;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 28px;
+  text-transform: uppercase;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.stat-item {
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 12px;
+  letter-spacing: 1.4px;
+  opacity: 0.9;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.achievement-card {
+  background: rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 28px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.35);
+}
+
+.badge-container {
+  width: 78px;
+  height: 78px;
+  margin: 0 auto 18px;
+  background: #ffffff;
+  color: #C43917;
+  border-radius: 50%;
+  font-size: 36px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.achievement-title {
+  font-size: 16px;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.achievement-name {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.progress-section {
+  margin-bottom: 40px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.progress-bar-container {
+  background: #e5e5e5;
+  height: 12px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 75%;
+  background: linear-gradient(90deg, #8B0000, #C43917);
+}
+
+.divider {
+  height: 1px;
+  background: #e5e5e5;
+  margin: 35px 0;
+}
+
+.closing-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #444;
+  margin-bottom: 36px;
+}
+
+.cta-container {
+  text-align: center;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 16px 55px;
+  background: linear-gradient(135deg, #8B0000, #C43917);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 8px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+
+.footer {
+  background: #111111;
+  padding: 40px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.logo-img {
+  max-width: 135px;
+  margin-bottom: 18px;
+  border-radius: 8px;
+}
+
+.company-name {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+
+.company-tagline {
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 24px;
+}
+
+.footer-links {
+  border-top: 1px solid rgba(255,255,255,0.15);
+  padding-top: 22px;
+}
+
+.footer-links a {
+  color: rgba(255,255,255,0.7);
+  margin: 0 14px;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.copyright {
+  margin-top: 18px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+}
+
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .content {
+    padding: 30px 24px;
+  }
+
+  .header {
+    padding: 40px 24px;
+  }
+
+  .header-title {
+    font-size: 28px;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="email-wrapper">
+  <div class="email-container">
+
+    <div class="header">
+      <div class="header-title">OKR Navigator</div>
+      <div class="header-subtitle">Performance Management Platform</div>
+    </div>
+
+    <div class="content">
+      <h2 class="greeting">Hello {{name}},</h2>
+
+      <p class="intro-text">
+        Here is your weekly performance update. Your efforts are shaping real progress and driving your growth forward.
+      </p>
+
+      <div class="performance-section">
+        <div class="section-title">Weekly Performance</div>
+
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-label">Score</div>
+            <div class="stat-value">{{score}}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Growth</div>
+            <div class="stat-value">+25%</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Streak</div>
+            <div class="stat-value">7 Days</div>
+          </div>
+        </div>
+
+        <div class="achievement-card">
+          <div class="badge-container">{{badge}}</div>
+          <div class="achievement-title">Achievement Unlocked</div>
+          <div class="achievement-name">{{badge}}</div>
+        </div>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-header">
+          <span>Next Level Progress</span>
+          <span>75%</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar"></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <p class="closing-text">
+        Keep pushing forward. New challenges and bonus opportunities are waiting for you. Stay consistent and continue building your momentum.
+      </p>
+
+      <div class="cta-container">
+        <a href="{{appLink}}" class="cta-button">Open Dashboard</a>
+      </div>
+    </div>
+
+    <div class="footer">
+      <img src="https://i.ibb.co/CK73ndZt/Whats-App-Image-2025-12-26-at-12-01-05-PM.jpg" class="logo-img" alt="Focus RH Games">
+      <div class="company-name">FOCUS RH GAMES</div>
+      <div class="company-tagline">Empowering Excellence Through Engagement</div>
+
+      <div class="footer-links">
+        <a href="{{appLink}}">Dashboard</a>
+        <a href="#">Support</a>
+        <a href="#">Privacy Policy</a>
+        <a href="{{unsubscribeLink}}">Unsubscribe</a>
+      </div>
+
+      <div class="copyright">
+        © 2024 Focus RH Games. All rights reserved.
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

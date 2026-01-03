@@ -7,6 +7,7 @@ import * as path from 'path'
 export class MailService implements OnModuleInit {
   private transporter
   private otpTemplate: string
+  private templates: Record<string, string> = {}
 
   constructor() {
     this.transporter = nodemailer.createTransport({
@@ -43,4 +44,33 @@ export class MailService implements OnModuleInit {
       html,
     }).catch(err => console.error('Email send error:', err))
   }
+
+async sendWeeklyActive(to: string, data: any) {
+  const html = this.renderTemplate('weekly-active.html', data)
+  await this.transporter.sendMail({
+    to,
+    subject: 'Your Weekly Performance Update',
+    html,
+  })
+}
+
+async sendWeeklyInactive(to: string, data: any) {
+  const html = this.renderTemplate('weekly-inactive.html', data)
+  await this.transporter.sendMail({
+    to,
+    subject: 'We Miss You at Focus RH Games',
+    html,
+  })
+}
+
+private renderTemplate(file: string, data: any) {
+  let template = this.templates[file]
+  Object.keys(data).forEach(key => {
+    template = template.replaceAll(`{{${key}}}`, String(data[key]))
+  })
+  return template
+}
+
+
+
 }
