@@ -17,10 +17,12 @@ model User {
   language  String?  @default("en")
   avatarPicId String? 
   role        String   @default("user")
+  isBlocked   Boolean   @default(false)
   otp         String?   // new field for OTP
   otpExpiry   DateTime? // new field for OTP expiration
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  lastActiveAt DateTime?
   challengesHosted Challenge[] @relation("HostChallenges")
   challengesJoined Challenge[] @relation("PlayerChallenges")
   challengeInvitations ChallengeInvitation[]

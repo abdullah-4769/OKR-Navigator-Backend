@@ -43,29 +43,53 @@ export class AuthService {
   }
 
   // Login user and return token
-  async login(email: string, password: string) {
-    const user = await this.prisma.user.findUnique({ where: { email } });
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+async login(email: string, password: string) {
+  const user = await this.prisma.user.findUnique({
+    where: { email }
+  })
 
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) throw new UnauthorizedException('Invalid credentials');
-
-    const token = this.jwtService.sign({ sub: user.id, email: user.email });
-
-    return {
-      access_token: token,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        language: user.language,
-        avatarPicId: user.avatarPicId,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      },
-    };
+  if (!user) {
+    throw new UnauthorizedException('Invalid credentials')
   }
+
+  if (user.isBlocked) {
+    throw new UnauthorizedException('Your account has been blocked. Please contact support')
+  }
+
+  const isValid = await bcrypt.compare(password, user.password)
+
+  if (!isValid) {
+    throw new UnauthorizedException('Invalid credentials')
+  }
+
+  await this.prisma.user.update({
+    where: { id: user.id },
+    data: {
+      lastActiveAt: new Date()
+    }
+  })
+
+  const token = this.jwtService.sign({
+    sub: user.id,
+    email: user.email
+  })
+
+  return {
+    access_token: token,
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      language: user.language,
+      avatarPicId: user.avatarPicId,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      lastActiveAt: new Date()
+    }
+  }
+}
+
 
   // Get user by id
   async getUserById(id: string) {
