@@ -28,7 +28,7 @@ export class PlansService {
     },
     {
       id: 2,
-      name: 'Solo',
+      name: 'Navigator',
       price: '3.99€/month',
       features: [
         { name: 'Full Solo Mode', included: true },
@@ -42,7 +42,7 @@ export class PlansService {
     },
     {
       id: 3,
-      name: 'Full',
+      name: 'MasterNavigator',
       price: '9.99€/month',
       features: [
         { name: 'All Navigator + Features', included: true },

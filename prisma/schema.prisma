@@ -238,7 +238,7 @@ enum ChallengeItemType {
 
 model Subscription {
   id        Int      @id @default(autoincrement())
-  userId    Int
+  userId    String
   planId    Int
   startDate DateTime @default(now())
   expiryDate DateTime

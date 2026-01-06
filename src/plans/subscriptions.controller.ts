@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post,Query, Body, Param } from '@nestjs/common';
 import { PlansService } from './plans.service';
 import { SubscriptionsService } from './subscriptions.service';
 
@@ -10,7 +10,7 @@ export class SubscriptionsController {
   ) {}
 
   @Post()
-  async subscribe(@Body() body: { userId: number; planId: number }) {
+  async subscribe(@Body() body: { userId: string; planId: number }) {
     const plan = this.plansService.getPlanById(body.planId);
     if (!plan) {
       return { message: 'Plan not found' };
@@ -34,12 +34,9 @@ export class SubscriptionsController {
 
   @Get(':userId/features')
   async getUserFeatures(@Param('userId') userId: string) {
-    const id = Number(userId);
+    await this.subscriptionsService.assignDefaultFreePlan(userId);
 
-    // assign default free plan if no subscription exists
-    await this.subscriptionsService.assignDefaultFreePlan(id);
-
-    const subscription = await this.subscriptionsService.getUserPlan(id);
+    const subscription = await this.subscriptionsService.getUserPlan(userId);
     if (!subscription) {
       return { message: 'No active subscription or subscription expired.' };
     }
@@ -59,4 +56,37 @@ export class SubscriptionsController {
           : 'Active subscription',
     };
   }
+
+@Get('all-users')
+async getAllUsers(@Query('page') pageStr?: string) {
+  const page = pageStr ? Number(pageStr) : 1;
+
+  const data = await this.subscriptionsService.getUsersWithPlanSimple(page);
+
+  // map subscriptions to include user info
+  const usersWithPlan = data.subscriptions.map(sub => {
+    const user = data.users.find(u => u.id === sub.userId);
+    const plan = this.plansService.getPlanById(sub.planId);
+
+    return {
+      userId: sub.userId,
+      name: user?.name || 'Unknown',
+      email: user?.email || 'Unknown',
+      planName: plan?.name || 'Unknown',
+      startDate: sub.startDate,
+      expiryDate: sub.expiryDate,
+      active: sub.active,
+    };
+  });
+
+  return {
+    counts: data.counts,
+    users: usersWithPlan,
+    more: data.hasMore,
+  };
+}
+
+
+
+
 }

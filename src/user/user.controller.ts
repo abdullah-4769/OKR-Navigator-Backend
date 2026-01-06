@@ -47,5 +47,24 @@ export class UserController {
       data
     }
   }
+
+
   
+
+  @Get('ai-performance/weekly')
+  async getWeeklyAiPerformance() {
+    return this.userService.getWeeklyAiPerformance()
+  }
+
+
+
+   @Get('weekly-report')
+  async getWeeklyReport() {
+    const report = await this.userService.getWeeklyUserReport();
+    return {
+      success: true,
+      message: 'Weekly user report fetched successfully',
+      data: report,
+    }
+  }
 }
