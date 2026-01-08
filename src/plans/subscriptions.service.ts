@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../lib/prisma/prisma.service';
+import { PlansService, Plan } from './plans.service'
 
 @Injectable()
 export class SubscriptionsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService,    private plansService: PlansService) {}
 
   async assignDefaultFreePlan(userId: string) {
     const existing = await this.prisma.subscription.findFirst({
@@ -105,6 +106,64 @@ async getUsersWithPlanSimple(page = 1) {
   });
 
   return { subscriptions, users, counts, hasMore };
+}
+
+
+
+async getSubscriptionDashboard() {
+  const subscriptions = await this.prisma.subscription.findMany()
+  const plans = await this.plansService.getAllPlans()
+  const planMap = new Map(plans.map(p => [p.id, p]))
+
+  let totalRevenue = 0
+  let activeSubscriptions = 0
+  const payingUsersSet = new Set()
+  const revenueByMonth: Record<string, number> = {}
+  const planStats: Record<number, { name: string; price: number; users: number }> = {}
+
+  subscriptions.forEach(sub => {
+    const plan = planMap.get(sub.planId)
+    if (!plan) return
+
+    const price = Number(plan.price.replace(/[^\d.]/g, ''))
+    totalRevenue += price
+    if (sub.active) activeSubscriptions += 1
+    if (price > 0) payingUsersSet.add(sub.userId)
+
+    const y = sub.startDate.getFullYear()
+    const m = String(sub.startDate.getMonth() + 1).padStart(2, "0")
+    const monthKey = `${y}-${m}`
+
+    revenueByMonth[monthKey] = (revenueByMonth[monthKey] || 0) + price
+
+    if (!planStats[sub.planId]) {
+      planStats[sub.planId] = { name: plan.name, price, users: 0 }
+    }
+    planStats[sub.planId].users += 1
+  })
+
+  const payingUsers = payingUsersSet.size
+  const avgRevenuePerUser = payingUsers === 0 ? 0 : totalRevenue / payingUsers
+
+  const revenueTrend: { month: string; revenue: number }[] = []
+  const now = new Date()
+
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    const y = d.getFullYear()
+    const m = String(d.getMonth() + 1).padStart(2, "0")
+    const monthKey = `${y}-${m}`
+    revenueTrend.push({ month: monthKey, revenue: revenueByMonth[monthKey] || 0 })
+  }
+
+  return {
+    totalRevenue,
+    activeSubscriptions,
+    payingUsers,
+    avgRevenuePerUser,
+    revenueTrend,
+    planDistribution: Object.values(planStats)
+  }
 }
 
 

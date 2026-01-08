@@ -86,6 +86,10 @@ async getAllUsers(@Query('page') pageStr?: string) {
   };
 }
 
+@Get('dashboard')
+async getDashboard() {
+  return this.subscriptionsService.getSubscriptionDashboard()
+}
 
 
 

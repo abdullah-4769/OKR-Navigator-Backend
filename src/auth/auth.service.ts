@@ -46,20 +46,20 @@ export class AuthService {
 async login(email: string, password: string) {
   const user = await this.prisma.user.findUnique({
     where: { email }
-  })
+  });
 
   if (!user) {
-    throw new UnauthorizedException('Invalid credentials')
+    throw new UnauthorizedException('Invalid credentials');
   }
 
   if (user.isBlocked) {
-    throw new UnauthorizedException('Your account has been blocked. Please contact support')
+    throw new UnauthorizedException('Your account has been blocked. Please contact support');
   }
 
-  const isValid = await bcrypt.compare(password, user.password)
+  const isValid = await bcrypt.compare(password, user.password);
 
   if (!isValid) {
-    throw new UnauthorizedException('Invalid credentials')
+    throw new UnauthorizedException('Invalid credentials');
   }
 
   await this.prisma.user.update({
@@ -67,12 +67,13 @@ async login(email: string, password: string) {
     data: {
       lastActiveAt: new Date()
     }
-  })
+  });
 
   const token = this.jwtService.sign({
     sub: user.id,
-    email: user.email
-  })
+    email: user.email,
+    role: user.role
+  });
 
   return {
     access_token: token,
@@ -83,12 +84,14 @@ async login(email: string, password: string) {
       phone: user.phone,
       language: user.language,
       avatarPicId: user.avatarPicId,
+      role: user.role,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
       lastActiveAt: new Date()
     }
-  }
+  };
 }
+
 
 
   // Get user by id
