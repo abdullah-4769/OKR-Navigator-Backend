@@ -50,6 +50,10 @@ const user = await this.prisma.user.upsert({
   },
 });
 
+  await this.prisma.user.update({
+    where: { id: user.id },
+    data: { lastActiveAt: new Date() },
+  });
 
 
     return { user };
