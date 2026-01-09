@@ -31,22 +31,43 @@ export class UserService {
     }
   }
 
-  async deleteUser(id: string) {
-    try {
-      const user = await this.prisma.user.findUnique({ where: { id } });
-      if (!user) throw new NotFoundException('User not found');
+async deleteUser(id: string) {
+  const user = await this.prisma.user.findUnique({ where: { id } });
+  if (!user) throw new NotFoundException('User not found');
 
-      await this.prisma.challengeInvitation.deleteMany({ where: { playerId: id } });
-      await this.prisma.challenge.deleteMany({ where: { hostId: id } });
+  // Delete invitations where the user is the player
+  await this.prisma.challengeInvitation.deleteMany({ where: { playerId: id } });
 
-      return await this.prisma.user.delete({ where: { id } });
-    } catch (error) {
-      if (error.code === 'P2003') {
-        throw new InternalServerErrorException('Cannot delete user due to related records');
-      }
-      throw new InternalServerErrorException('Failed to delete user');
-    }
+  // Find all challenges hosted by the user
+  const challenges = await this.prisma.challenge.findMany({ where: { hostId: id }, select: { id: true } });
+  const challengeIds = challenges.map(c => c.id);
+
+  // Delete all invitations for those challenges
+  if (challengeIds.length > 0) {
+    await this.prisma.challengeInvitation.deleteMany({ where: { challengeId: { in: challengeIds } } });
   }
+
+  // Delete the challenges hosted by the user
+  await this.prisma.challenge.deleteMany({ where: { hostId: id } });
+
+  // Delete other related records
+  await this.prisma.challengeModeScore.deleteMany({ where: { userId: id } });
+  await this.prisma.teamMember.deleteMany({ where: { userId: id } });
+  await this.prisma.soloScore.deleteMany({ where: { userId: id } });
+  await this.prisma.finalTeamScore.deleteMany({ where: { userId: id } });
+  await this.prisma.campaignSession.deleteMany({ where: { playerId: id } });
+  await this.prisma.campaignModeScore.deleteMany({ where: { userId: id } });
+  await this.prisma.userAutoJoin.deleteMany({ where: { userId: id } });
+  await this.prisma.subscription.deleteMany({ where: { userId: id } });
+  await this.prisma.bonusScore.deleteMany({ where: { userId: id } });
+  await this.prisma.userRole.deleteMany({ where: { userId: id } });
+
+  // Finally, delete the user
+  return await this.prisma.user.delete({ where: { id } });
+}
+
+
+
 
   async toggleBlock(id: string) {
     try {
@@ -72,6 +93,7 @@ async getUserProfileWithStats(userId: string) {
       name: true,
       email: true,
       role: true,
+       isBlocked: true,
       avatarPicId: true,
       lastActiveAt: true
     }
