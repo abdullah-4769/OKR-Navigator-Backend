@@ -1,6 +1,10 @@
 import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../lib/prisma/prisma.service';
-
+type DailyReportItem = {
+  date: string
+  newRegistrations: number
+  activeUsers: number
+}
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
@@ -236,101 +240,48 @@ async getWeeklyAiPerformance() {
 }
 
 async getWeeklyUserReport() {
-  const now = new Date()
-  const weekStart = new Date()
-  weekStart.setDate(now.getDate() - 6)
-  weekStart.setHours(0, 0, 0, 0)
+    const now = new Date()
+    const weekStart = new Date()
+    weekStart.setDate(now.getDate() - 6)
+    weekStart.setHours(0, 0, 0, 0)
+    const weekEnd = new Date()
+    weekEnd.setHours(23, 59, 59, 999)
 
-  const weekEnd = new Date()
-  weekEnd.setHours(23, 59, 59, 999)
+    const createdUsers = await this.prisma.user.findMany({ where: { createdAt: { gte: weekStart, lte: weekEnd } }, select: { createdAt: true } })
+    const activeUsers = await this.prisma.user.findMany({ where: { lastActiveAt: { gte: weekStart, lte: weekEnd } }, select: { lastActiveAt: true } })
 
-  const usersGroupedByCreation = await this.prisma.user.groupBy({
-    by: ['createdAt'],
-    _count: { id: true },
-    where: { createdAt: { gte: weekStart, lte: weekEnd } }
-  })
+    const dailyReport: DailyReportItem[] = []
 
-  const usersGroupedByActivity = await this.prisma.user.groupBy({
-    by: ['lastActiveAt'],
-    _count: { id: true },
-    where: { lastActiveAt: { gte: weekStart, lte: weekEnd } }
-  })
+    for (let i = 0; i < 7; i++) {
+      const day = new Date()
+      day.setDate(now.getDate() - i)
+      day.setHours(0, 0, 0, 0)
+      const dayEnd = new Date(day)
+      dayEnd.setHours(23, 59, 59, 999)
 
-  type DailyReportItem = {
-    date: string
-    newRegistrations: number
-    activeUsers: number
+      const newRegistrations = createdUsers.filter(u => u.createdAt >= day && u.createdAt <= dayEnd).length
+      const activeCount = activeUsers.filter(u => u.lastActiveAt && u.lastActiveAt >= day && u.lastActiveAt <= dayEnd).length
+
+     const localDate = day.toLocaleDateString('en-CA') // format: YYYY-MM-DD
+dailyReport.unshift({ date: localDate, newRegistrations, activeUsers: activeCount })
+
+    }
+
+    const totalUsers = await this.prisma.user.count()
+    const totalSubscriptions = await this.prisma.subscription.count({ where: { active: true } })
+    const activeUserIds = (await this.prisma.user.findMany({ where: { lastActiveAt: { gte: weekStart } }, select: { id: true } })).map(u => u.id)
+
+    const [soloStats, teamStats, campaignStats] = await Promise.all([
+      this.prisma.soloScore.aggregate({ _avg: { score: true }, where: { userId: { in: activeUserIds }, createdAt: { gte: weekStart } } }),
+      this.prisma.finalTeamScore.aggregate({ _avg: { score: true }, where: { userId: { in: activeUserIds }, createdAt: { gte: weekStart } } }),
+      this.prisma.campaignModeScore.aggregate({ _avg: { totalScore: true }, where: { userId: { in: activeUserIds }, createdAt: { gte: weekStart } } })
+    ])
+
+    const scores = [soloStats._avg?.score ?? 0, teamStats._avg?.score ?? 0, campaignStats._avg?.totalScore ?? 0].filter(s => s > 0)
+    const overallAiPerf = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0
+
+    return { weekly: dailyReport, summary: { totalUsers, aiPerformance: overallAiPerf + '%', totalSubscriptions } }
   }
-
-  const dailyReport: DailyReportItem[] = []
-
-  for (let i = 0; i < 7; i++) {
-    const day = new Date()
-    day.setDate(now.getDate() - i)
-    day.setHours(0, 0, 0, 0)
-    const dayEnd = new Date(day)
-    dayEnd.setHours(23, 59, 59, 999)
-
-    const newRegistrations =
-      usersGroupedByCreation.find(
-        u => u.createdAt && new Date(u.createdAt).toDateString() === day.toDateString()
-      )?._count.id ?? 0
-
-    const activeUsers =
-      usersGroupedByActivity.find(
-        u => u.lastActiveAt && new Date(u.lastActiveAt).toDateString() === day.toDateString()
-      )?._count.id ?? 0
-
-    dailyReport.unshift({
-      date: day.toISOString().split('T')[0],
-      newRegistrations,
-      activeUsers
-    })
-  }
-
-  const totalUsers = await this.prisma.user.count()
-  const totalSubscriptions = await this.prisma.subscription.count({
-    where: { active: true }
-  })
-
-  const activeUserIds = await this.prisma.user.findMany({
-    where: { lastActiveAt: { gte: weekStart } },
-    select: { id: true }
-  }).then(users => users.map(u => u.id))
-
-  const [soloStats, teamStats, campaignStats] = await Promise.all([
-    this.prisma.soloScore.aggregate({
-      _avg: { score: true },
-      where: { userId: { in: activeUserIds }, createdAt: { gte: weekStart } }
-    }),
-    this.prisma.finalTeamScore.aggregate({
-      _avg: { score: true },
-      where: { userId: { in: activeUserIds }, createdAt: { gte: weekStart } }
-    }),
-    this.prisma.campaignModeScore.aggregate({
-      _avg: { totalScore: true },
-      where: { userId: { in: activeUserIds }, createdAt: { gte: weekStart } }
-    })
-  ])
-
-  const scores = [
-    soloStats._avg?.score ?? 0,
-    teamStats._avg?.score ?? 0,
-    campaignStats._avg?.totalScore ?? 0
-  ].filter(s => s > 0)
-
-  const overallAiPerf = scores.length
-    ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
-    : 0
-
-  const summary = {
-    totalUsers,
-    aiPerformance: overallAiPerf + '%',
-    totalSubscriptions
-  }
-
-  return { weekly: dailyReport, summary }
-}
 
 
 }
