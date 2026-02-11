@@ -113,13 +113,13 @@ async getUsersWithPlanSimple(page = 1) {
 async getSubscriptionDashboard() {
   const subscriptions = await this.prisma.subscription.findMany()
   const plans = await this.plansService.getAllPlans()
-  const planMap = new Map(plans.map(p => [p.id, p]))
+  const users = await this.prisma.user.findMany()
 
+  const planMap = new Map(plans.map(p => [p.id, p]))
   let totalRevenue = 0
-  let activeSubscriptions = 0
   const payingUsersSet = new Set()
   const revenueByMonth: Record<string, number> = {}
-  const planStats: Record<number, { name: string; price: number; users: number }> = {}
+  const planStats: Record<number | string, { name: string; price: number; users: number }> = {}
 
   subscriptions.forEach(sub => {
     const plan = planMap.get(sub.planId)
@@ -127,7 +127,6 @@ async getSubscriptionDashboard() {
 
     const price = Number(plan.price.replace(/[^\d.]/g, ''))
     totalRevenue += price
-    if (sub.active) activeSubscriptions += 1
     if (price > 0) payingUsersSet.add(sub.userId)
 
     const y = sub.startDate.getFullYear()
@@ -142,12 +141,34 @@ async getSubscriptionDashboard() {
     planStats[sub.planId].users += 1
   })
 
+  const subscribedUserIds = new Set(subscriptions.map(s => s.userId))
+  users.forEach(user => {
+    if (!subscribedUserIds.has(user.id)) {
+      if (!planStats['free']) {
+        planStats['free'] = { name: 'Free', price: 0, users: 0 }
+      }
+      planStats['free'].users += 1
+    }
+  })
+
+  const planDistribution = Object.values(planStats).reduce((acc, plan) => {
+    if (plan.name === 'Free') {
+      const existing = acc.find(p => p.name === 'Free')
+      if (existing) {
+        existing.users += plan.users
+        return acc
+      }
+    }
+    acc.push(plan)
+    return acc
+  }, [] as { name: string; price: number; users: number }[])
+
+  const activeSubscriptions = planDistribution.reduce((sum, plan) => sum + plan.users, 0)
   const payingUsers = payingUsersSet.size
   const avgRevenuePerUser = payingUsers === 0 ? 0 : totalRevenue / payingUsers
 
   const revenueTrend: { month: string; revenue: number }[] = []
   const now = new Date()
-
   for (let i = 11; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
     const y = d.getFullYear()
@@ -162,9 +183,10 @@ async getSubscriptionDashboard() {
     payingUsers,
     avgRevenuePerUser,
     revenueTrend,
-    planDistribution: Object.values(planStats)
+    planDistribution
   }
 }
+
 
 
 
