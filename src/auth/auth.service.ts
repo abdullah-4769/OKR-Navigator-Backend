@@ -13,15 +13,16 @@ export class AuthService {
   ) {}
 
   // Register new user
-  async register(
-    name: string,
-    email: string,
-    password: string,
-    phone?: string,
-    language?: string
-  ) {
-    const hashedPassword = await bcrypt.hash(password, 10);
+async register(
+  name: string,
+  email: string,
+  password: string,
+  phone?: string,
+  language?: string
+) {
+  const hashedPassword = await bcrypt.hash(password, 10);
 
+  try {
     const user = await this.prisma.user.create({
       data: {
         name,
@@ -40,7 +41,13 @@ export class AuthService {
       language: user.language,
       avatarPicId: user.avatarPicId,
     };
+  } catch (e) {
+    if (e.code === 'P2002' && e.meta?.target.includes('email')) {
+      throw new Error('already exist');
+    }
+    throw e;
   }
+}
 
   // Login user and return token
 async login(email: string, password: string) {

@@ -6,16 +6,34 @@ import { AuthGuard } from '@nestjs/passport';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('register')
-  async register(
-    @Body('name') name: string,
-    @Body('email') email: string,
-    @Body('password') password: string,
-    @Body('phone') phone?: string,
-    @Body('language') language?: string
-  ) {
-    return this.authService.register(name, email, password, phone, language);
+@Post('register')
+async register(
+  @Body('name') name: string,
+  @Body('email') email: string,
+  @Body('password') password: string,
+  @Body('phone') phone?: string,
+  @Body('language') language?: string
+) {
+  try {
+    const user = await this.authService.register(name, email, password, phone, language);
+    return {
+      statusCode: 201,
+      message: 'user_registered',
+      data: user,
+    };
+  } catch (e) {
+    if (e.message === 'already exists') {
+      return {
+        statusCode: 400,
+        message: 'already exist',
+      };
+    }
+    return {
+      statusCode: 500,
+      message: 'already exist',
+    };
   }
+}
 
   @Post('login')
   async login(
