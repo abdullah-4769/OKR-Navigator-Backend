@@ -1,4 +1,4 @@
-import { Controller, Post, Body,Param, Get, UseGuards, Request,Patch  } from '@nestjs/common';
+import { Controller, Post, Body,Param, Get, UseGuards,HttpException,HttpStatus ,Request,Patch  } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -7,27 +7,37 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
 @Post('register')
-  async register(
-    @Body('name') name: string,
-    @Body('email') email: string,
-    @Body('password') password: string,
-    @Body('phone') phone?: string,
-    @Body('language') language?: string
-  ) {
-    try {
-      const user = await this.authService.register(name, email, password, phone, language);
-      return {
-        statusCode: 201,
-        message: 'user_registered',
-        data: user,
-      };
-    } catch (e) {
-      return {
-        statusCode: 500,
-        message: 'Email already exists',
-      };
-    }
+async register(
+  @Body('name') name: string,
+  @Body('email') email: string,
+  @Body('password') password: string,
+  @Body('phone') phone?: string,
+  @Body('language') language?: string
+) {
+  try {
+    const user = await this.authService.register(
+      name,
+      email,
+      password,
+      phone,
+      language
+    );
+
+    return {
+      statusCode: 201,
+      message: 'user_registered',
+      data: user,
+    };
+  } catch (e) {
+    throw new HttpException(
+      {
+        statusCode: 400,
+        message: 'email_already_exists',
+      },
+      HttpStatus.BAD_REQUEST,
+    );
   }
+}
 
   @Post('login')
   async login(
