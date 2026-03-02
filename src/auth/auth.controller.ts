@@ -7,33 +7,33 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
 @Post('register')
-async register(
-  @Body('name') name: string,
-  @Body('email') email: string,
-  @Body('password') password: string,
-  @Body('phone') phone?: string,
-  @Body('language') language?: string
-) {
-  try {
-    const user = await this.authService.register(name, email, password, phone, language);
-    return {
-      statusCode: 201,
-      message: 'user_registered',
-      data: user,
-    };
-  } catch (e) {
-    if (e.message === 'already exists') {
+  async register(
+    @Body('name') name: string,
+    @Body('email') email: string,
+    @Body('password') password: string,
+    @Body('phone') phone?: string,
+    @Body('language') language?: string
+  ) {
+    try {
+      const user = await this.authService.register(name, email, password, phone, language);
       return {
-        statusCode: 400,
-        message: 'already exist',
+        statusCode: 201,
+        message: 'user_registered',
+        data: user,
+      };
+    } catch (e) {
+      if (e.message === 'already exist') {
+        return {
+          statusCode: 400,
+          message: 'email_already_exists',
+        };
+      }
+      return {
+        statusCode: 500,
+        message: 'registration_failed',
       };
     }
-    return {
-      statusCode: 500,
-      message: 'already exist',
-    };
   }
-}
 
   @Post('login')
   async login(
