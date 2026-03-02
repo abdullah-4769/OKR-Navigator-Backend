@@ -22,15 +22,9 @@ export class AuthController {
         data: user,
       };
     } catch (e) {
-      if (e.message === 'already exist') {
-        return {
-          statusCode: 400,
-          message: 'email_already_exists',
-        };
-      }
       return {
         statusCode: 500,
-        message: 'registration_failed',
+        message: '"Email already exists',
       };
     }
   }
