@@ -24,7 +24,7 @@ export class AuthController {
     } catch (e) {
       return {
         statusCode: 500,
-        message: '"Email already exists',
+        message: 'Email already exists',
       };
     }
   }
