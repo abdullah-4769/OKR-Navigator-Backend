@@ -83,14 +83,21 @@ async sendOtp(@Body('email') email: string) {
 }
 
 // Reset password
-@Post('reset-password')
-async resetPassword(
-  @Body('email') email: string,
-  @Body('otp') otp: string,
-  @Body('newPassword') newPassword: string
-) {
-  return this.authService.resetPassword(email, otp, newPassword);
-}
+  @Post('reset-password')
+  async resetPassword(
+    @Body('email') email: string,
+    @Body('newPassword') newPassword: string
+  ) {
+    return this.authService.resetPassword(email, newPassword);
+  }
+
+  @Post('verify-otp')
+  async verifyOtp(
+    @Body('email') email: string,
+    @Body('otp') otp: string
+  ) {
+    return this.authService.verifyOtp(email, otp);
+  }
 
 
 

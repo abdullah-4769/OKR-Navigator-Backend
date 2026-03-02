@@ -213,22 +213,28 @@ async sendOtp(email: string) {
 
 
 
-  async resetPassword(email: string, otp: string, newPassword: string) {
+  async resetPassword(email: string, newPassword: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) throw new Error('User not found');
-    if (!user.otp || !user.otpExpiry) throw new Error('OTP not generated');
-
-    if (user.otp !== otp) throw new Error('Invalid OTP');
-    if (user.otpExpiry < new Date()) throw new Error('OTP expired');
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await this.prisma.user.update({
       where: { email },
-      data: { password: hashedPassword, otp: null, otpExpiry: null },
+      data: { password: hashedPassword },
     });
 
     return { message: 'Password reset successfully' };
+  }
+
+  async verifyOtp(email: string, otp: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) throw new Error('User not found');
+    if (!user.otp || !user.otpExpiry) throw new Error('OTP not generated');
+    if (user.otp !== otp) throw new Error('Invalid OTP');
+    if (user.otpExpiry < new Date()) throw new Error('OTP expired');
+
+    return { message: 'OTP verified successfully' };
   }
 
 }
