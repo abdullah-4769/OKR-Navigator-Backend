@@ -35,26 +35,31 @@ export class WebsocketGateway {
     return this.wsService.inviteTeam(data.teamToken)
   }
 
-  @SubscribeMessage('joinTeam')
-  async handleJoinTeam(
-    @MessageBody() data: { teamToken: string; userId: string },
-    @ConnectedSocket() client: Socket,
-  ) {
-    const valid = this.wsService.isTokenValid(data.teamToken)
-    if (!valid) return { error: 'Invalid or expired team token' }
+@SubscribeMessage('joinTeam')
+async handleJoinTeam(
+  @MessageBody() data: { teamToken: string; userId: string },
+  @ConnectedSocket() client: Socket,
+) {
+  const valid = this.wsService.isTokenValid(data.teamToken)
+  if (!valid) return { error: 'Invalid or expired team token' }
 
-    const member = await this.teamService.joinTeam(
-      data.teamToken,
-      data.userId,
-    )
+  const decoded = this.wsService.decodeToken(data.teamToken)
+  if (!decoded?.teamId) return { error: 'Invalid token' }
 
-    client.join(`team-${member.teamId}`)
-    client.data.userId = data.userId
+  client.join(`team-${decoded.teamId}`)
 
-    this.wsService.registerClient(data.userId, client)
+  client.data.userId = data.userId
 
-    return { success: true, member }
+  this.wsService.registerClient(data.userId, client)
+
+  return {
+    success: true,
+    member: {
+      role: 'MEMBER',
+      teamId: decoded.teamId,
+    },
   }
+}
 
 @SubscribeMessage('message')
 async handleMessage(
