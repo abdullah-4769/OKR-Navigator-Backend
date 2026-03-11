@@ -56,14 +56,24 @@ export class WebsocketGateway {
     return { success: true, member }
   }
 
-  @SubscribeMessage('message')
-  handleMessage(
-    @MessageBody() data: { teamToken: string; message: string },
-    @ConnectedSocket() client: Socket,
-  ) {
-    const userId: string = client.data.userId || 'Unknown'
-    this.server
-      .to(`team-${data.teamToken}`)
-      .emit('message', { userId, message: data.message })
-  }
+@SubscribeMessage('message')
+async handleMessage(
+  @MessageBody() data: { teamToken: string; message: string },
+  @ConnectedSocket() client: Socket,
+) {
+  const userId: string = client.data.userId || 'Unknown'
+  const decoded = this.wsService.decodeToken(data.teamToken)
+  if (!decoded?.teamId) return { error: 'Invalid token' }
+
+  const user = await this.wsService.getUserById(userId)
+  if (!user) return { error: 'User not found' }
+
+  this.server
+    .to(`team-${decoded.teamId}`)
+    .emit('message', {
+      userId: user.id,
+      name: user.name,
+      message: data.message,
+    })
+}
 }
